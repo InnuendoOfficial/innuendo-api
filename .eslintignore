@@ -1,0 +1,6 @@
+prisma/*
+public/*
+test/*
+typedoc/*
+node_modules/*
+cypress/*
