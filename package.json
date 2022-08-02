@@ -10,12 +10,10 @@
     "db:dev:rm": "docker-compose rm -s -f -v dev-db",
     "db:dev:up": "docker-compose up -d dev-db",
     "db:dev:restart": "npm run db:dev:rm && npm run db:dev:up && npm run prisma:dev:deploy",
-
     "prisma:test:deploy": "dotenv -e .env.test -- prisma migrate deploy",
     "db:test:rm": "docker-compose rm -s -f -v test-db",
     "db:test:up": "docker-compose up -d test-db",
     "db:test:restart": "npm run db:test:rm && npm run db:test:up && npm run prisma:test:deploy",
-
     "prebuild": "rimraf dist",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
@@ -32,7 +30,6 @@
     "pretest:e2e": "npm run db:test:restart",
     "test:e2e": "dotenv -e .env.test -- jest --no-cache --config ./test/jest-e2e.json",
     "test:e2e:watch": "dotenv -e .env.test -- jest --watch --no-cache --config ./test/jest-e2e.json"
-
   },
   "dependencies": {
     "@nestjs/common": "^8.0.0",
