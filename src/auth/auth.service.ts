@@ -6,39 +6,40 @@ import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 
 @Injectable()
 export class AuthService {
-    constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) {}
 
-    async signup(dto: AuthDto) {
-        const hash = await argon.hash(dto.password);
+  async signup(dto: AuthDto) {
+    const hash = await argon.hash(dto.password);
 
-        try {
-            const user = await this.prisma.user.create({
-                data: {
-                    email: dto.email,
-                    hash,
-                }
-            });
-            delete user.hash;
-            return user;
-        } catch (error) {
-            if (error instanceof PrismaClientKnownRequestError) {
-                if (error.code === 'P2002') {
-                    throw new ForbiddenException('Credentials already taken');
-                }
-            }
-            throw error;
+    try {
+      const user = await this.prisma.user.create({
+        data: {
+          email: dto.email,
+          hash,
+        },
+      });
+      delete user.hash;
+      return user;
+    } catch (error) {
+      if (error instanceof PrismaClientKnownRequestError) {
+        if (error.code === 'P2002') {
+          throw new ForbiddenException('Credentials already taken');
         }
+      }
+      throw error;
     }
+  }
 
-    async login(dto: AuthDto) {
-        const user = await this.prisma.user.findUnique({
-            where: {
-                email: dto.email
-            }
-        });
-        if (!user) throw new ForbiddenException('Incorrect email');
-        if (!await argon.verify(user.hash, dto.email)) throw new ForbiddenException('Incorrect password');
-        delete user.hash;
-        return user;
-    }
+  async login(dto: AuthDto) {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        email: dto.email,
+      },
+    });
+    if (!user) throw new ForbiddenException('Incorrect email');
+    if (!(await argon.verify(user.hash, dto.email)))
+      throw new ForbiddenException('Incorrect password');
+    delete user.hash;
+    return user;
+  }
 }
