@@ -1,5 +1,13 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
-import { indicatorTypesDto } from './dto';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+} from '@nestjs/common';
+import { indicatorTypeDto } from './dto';
 import { IndicatorTypesService } from './indicatorTypes.service';
 
 @Controller('indicator_types')
@@ -7,22 +15,27 @@ export class IndicatorTypesController {
   constructor(private indicatorTypesService: IndicatorTypesService) {}
 
   @Get()
-  getIndicators() {
+  getIndicatorTypes() {
     return this.indicatorTypesService.findAllIndicatorTypes();
   }
 
   @Get(':id')
-  getIndicator(@Param('id') id: string) {
+  getIndicatorType(@Param('id') id: string) {
     return this.indicatorTypesService.findOneIndicatorType(id);
   }
 
   @Post()
-  createIndicator(@Body() dto: indicatorTypesDto) {
+  createIndicatorType(@Body() dto: indicatorTypeDto) {
     return this.indicatorTypesService.createIndicatorType(dto);
   }
 
+  @Put(':id')
+  updateIndicatorType(@Param('id') id: string, @Body() dto: indicatorTypeDto) {
+    return this.indicatorTypesService.updateIndicatorType(id, dto);
+  }
+
   @Delete(':id')
-  deleteIndicator(@Param('id') id: string) {
+  deleteIndicatorType(@Param('id') id: string) {
     return this.indicatorTypesService.deleteIndicatorType(id);
   }
 }

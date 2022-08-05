@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { indicatorTypesDto } from './dto';
+import { indicatorTypeDto } from './dto';
 
 @Injectable()
 export class IndicatorTypesService {
@@ -9,8 +9,8 @@ export class IndicatorTypesService {
 
   async findAllIndicatorTypes() {
     try {
-      const indicators = await this.prisma.indicatorType.findMany();
-      return indicators;
+      const indicatorTypes = await this.prisma.indicatorType.findMany();
+      return indicatorTypes;
     } catch (error) {
       throw error;
     }
@@ -18,23 +18,23 @@ export class IndicatorTypesService {
 
   async findOneIndicatorType(id: string) {
     try {
-      const indicators = await this.prisma.indicatorType.findUnique({
+      const indicatorType = await this.prisma.indicatorType.findUnique({
         where: { id: +id },
       });
-      return indicators;
+      return indicatorType;
     } catch (error) {
       throw error;
     }
   }
 
-  async createIndicatorType(dto: indicatorTypesDto) {
+  async createIndicatorType(dto: indicatorTypeDto) {
     try {
-      const indicator = await this.prisma.indicatorType.create({
+      const indicatorType = await this.prisma.indicatorType.create({
         data: {
           ...dto,
         },
       });
-      return indicator;
+      return indicatorType;
     } catch (error) {
       throw error;
     }
@@ -52,6 +52,25 @@ export class IndicatorTypesService {
         error.code === 'P2025'
       ) {
         throw new NotFoundException('Record to delete does not exist.');
+      }
+      throw error;
+    }
+  }
+
+  async updateIndicatorType(id: string, dto: indicatorTypeDto) {
+    try {
+      const indicatorType = await this.prisma.indicatorType.update({
+        where: { id: +id },
+        data: { ...dto },
+      });
+      return indicatorType;
+    } catch (error) {
+      console.log(error);
+      if (
+        error instanceof PrismaClientKnownRequestError &&
+        error.code === 'P2025'
+      ) {
+        throw new NotFoundException('Record to update not found.');
       }
       throw error;
     }
