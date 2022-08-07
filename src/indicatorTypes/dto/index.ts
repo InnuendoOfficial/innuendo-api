@@ -1,1 +1,1 @@
-export * from './indicators.dto';
+export * from './indicatorTypes.dto';
