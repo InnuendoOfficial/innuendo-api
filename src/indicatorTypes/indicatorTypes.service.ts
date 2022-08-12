@@ -21,6 +21,9 @@ export class IndicatorTypesService {
       const indicatorType = await this.prisma.indicatorType.findUnique({
         where: { id: +id },
       });
+      if (!indicatorType) {
+        throw new NotFoundException('Record does not exist.');
+      }
       return indicatorType;
     } catch (error) {
       throw error;
