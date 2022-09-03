@@ -3,7 +3,7 @@
 
 generator client {
   provider = "prisma-client-js"
-  binaryTargets = "windows"
+  binaryTargets = ["native", "windows"]
 }
 
 datasource db {
@@ -13,14 +13,40 @@ datasource db {
 
 model User {
   id Int @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
   email String @unique
   hash String
 
-  firstName String?
+  first_name String?
   lastname String?
 
   @@map("users")
+}
+
+model IndicatorType {
+  id Int @id @default(autoincrement())
+
+  name String
+  unit_measure UnitMeasure
+
+  indicators Indicator[]
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model Indicator {
+  id Int @id @default(autoincrement())
+
+  value Json?
+
+  indicator_type IndicatorType @relation(fields: [indicator_type_id], references: [id])
+  indicator_type_id Int @unique
+}
+
+enum UnitMeasure {
+  INT
+  STRING
 }
