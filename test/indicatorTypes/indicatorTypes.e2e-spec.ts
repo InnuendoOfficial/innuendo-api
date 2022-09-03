@@ -69,5 +69,52 @@ describe('IndicatorTypes e2e', () => {
           .expectBodyContains(await prisma.indicatorType.findMany())
       });
     });
+    describe('get one indicator type', () =>  {
+      it('Should the indicator type with corresponding id', async () => {
+        return pactum
+          .spec()
+          .get('/indicator_types/1')
+          .expectStatus(200)
+          .expectBodyContains(await prisma.indicatorType.findUnique({where: {id: 1}}))
+      });
+    });
+    describe('get inexistant indicator type', () =>  {
+      it('Should return an error', async () => {
+        return pactum
+          .spec()
+          .get('/indicator_types/974')
+          .expectStatus(404)
+      });
+    });
+  });
+
+  describe('PUT /indicator_types', () => {
+    describe('update one indicator type', () =>  {
+      it('Should update the indicator type', async () => {
+        const dto: indicatorTypeDto = {
+          name: 'Flux (L)',
+          unit_measure: 'INT',
+        };
+        return pactum
+          .spec()
+          .put('/indicator_types/1')
+          .withBody(dto)
+          .expectStatus(200)
+          .expectJsonLike(dto)
+      });
+    });
+  });
+
+  describe('DELETE /indicator_types', () => {
+    describe('delete one indicator type', () =>  {
+      it('Should delete the indicator type', async () => {
+        pactum
+          .spec()
+          .delete('/indicator_types/1')
+          .expectStatus(200)
+
+        const res = await prisma.indicatorType.findUnique({where: {id: 1}})
+      });
+    });
   });
 });
