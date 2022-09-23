@@ -10,4 +10,6 @@ COPY . .
 
 RUN yarn prisma generate && npm run build
 
+EXPOSE 3333
+
 CMD [ "node", "dist/main.js" ]
