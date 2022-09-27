@@ -3,7 +3,7 @@ import { Test } from '@nestjs/testing'
 import { PrismaService } from '../../src/prisma/prisma.service';
 import { AppModule } from '../../src/app.module';
 import * as pactum from 'pactum';
-import { indicatorTypeDto } from 'src/indicatorTypes/dto';
+import { indicatorTypeDto } from '../../src/indicatorTypes/dto';
 
 describe('IndicatorTypes e2e', () => {
   let app:  INestApplication;
