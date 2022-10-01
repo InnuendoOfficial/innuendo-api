@@ -1,5 +1,5 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { PrismaClientKnownRequestError, PrismaClientValidationError } from '@prisma/client/runtime';
 import { PrismaService } from '../prisma/prisma.service';
 import { indicatorTypeDto } from './dto';
 
@@ -39,6 +39,9 @@ export class IndicatorTypesService {
       });
       return indicatorType;
     } catch (error) {
+      if (error instanceof PrismaClientValidationError) {
+        throw new BadRequestException('Indicator type provided is not valid.');
+      }
       throw error;
     }
   }
