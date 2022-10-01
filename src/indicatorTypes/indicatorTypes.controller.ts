@@ -34,7 +34,7 @@ export class IndicatorTypesController {
 
   @Get(':id')
   getIndicatorType(@Param('id') id: string) {
-    return this.indicatorTypesService.findOneIndicatorType(id);
+    return this.indicatorTypesService.findOneIndicatorType(+id);
   }
 
   // POST

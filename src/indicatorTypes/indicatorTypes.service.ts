@@ -16,10 +16,10 @@ export class IndicatorTypesService {
     }
   }
 
-  async findOneIndicatorType(id: string) {
+  async findOneIndicatorType(id: number) {
     try {
       const indicatorType = await this.prisma.indicatorType.findUnique({
-        where: { id: +id },
+        where: { id: id },
       });
       if (!indicatorType) {
         throw new NotFoundException('Record does not exist.');
@@ -68,7 +68,6 @@ export class IndicatorTypesService {
       });
       return indicatorType;
     } catch (error) {
-      console.log(error);
       if (
         error instanceof PrismaClientKnownRequestError &&
         error.code === 'P2025'

@@ -22,6 +22,7 @@ model User {
   firstname String?
   lastname String?
 
+  reports Report[]
   @@map("users")
 }
 
@@ -40,13 +41,37 @@ model IndicatorType {
 model Indicator {
   id Int @id @default(autoincrement())
 
-  value Json?
+  value IndicatorValue?
 
   indicator_type IndicatorType @relation(fields: [indicator_type_id], references: [id])
-  indicator_type_id Int @unique
+  report Report @relation(fields: [report_id], references: [id], onDelete: Cascade)
+
+  indicator_type_id Int
+  report_id Int
+}
+
+model IndicatorValue {
+  id Int @id @default(autoincrement())
+
+  int Int?
+  string String?
+
+  indicator Indicator @relation(fields: [indicator_id], references: [id], onDelete: Cascade)
+
+  indicator_id Int @unique
+}
+
+model Report {
+  id Int @id @default(autoincrement())
+
+  date DateTime @default(now())
+  indicators Indicator[]
+
+  user User @relation(fields: [user_id], references: [id])
+  user_id Int
 }
 
 enum UnitMeasure {
-  INT
-  STRING
+  int
+  string
 }
