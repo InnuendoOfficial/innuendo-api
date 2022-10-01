@@ -33,7 +33,7 @@ describe('IndicatorTypes e2e', () => {
   describe('POST /indicator_types', () => {
     const dto: indicatorTypeDto = {
       name: 'Weight (kg)',
-      unit_measure: 'INT',
+      unit_measure: 'int',
     }
     const wrongDto = {
       name: 'Weight (kg)',
@@ -93,7 +93,7 @@ describe('IndicatorTypes e2e', () => {
       it('Should update the indicator type', async () => {
         const dto: indicatorTypeDto = {
           name: 'Flux (L)',
-          unit_measure: 'INT',
+          unit_measure: 'int',
         };
         return pactum
           .spec()

@@ -23,7 +23,7 @@ export class AuthService {
         },
       });
       delete user.hash;
-      return user;
+      return this.getAccessToken(user.email);
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
         if (error.code === 'P2002') {

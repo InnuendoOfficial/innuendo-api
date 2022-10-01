@@ -1,13 +1,15 @@
-import { Body, Controller, Get, Post, Param, Delete, Query, Put } from '@nestjs/common';
+import { Body, Controller, Get, Post, Param, Delete, Query, Put, UseGuards } from '@nestjs/common';
 import { ApiCreatedResponse, ApiForbiddenResponse, ApiNoContentResponse, ApiNotFoundResponse, ApiOkResponse, ApiParam, ApiQuery, ApiTags, ApiUnprocessableEntityResponse } from '@nestjs/swagger';
+import { User } from '@prisma/client';
+import { GetUser } from 'src/auth/decorator';
+import { JwtGuard } from 'src/auth/guard';
 import { ReportDto, reportQueriesDto } from './dto';
 import { ReportsService } from './reports.service';
 
 @ApiTags('Reports')
+
+@UseGuards(JwtGuard)
 @Controller('reports')
-
-// TODO: add a auth guard (you have to be logged in as a user)
-
 export class ReportsController {
   constructor(private reportsService: ReportsService) {}
 
@@ -20,9 +22,8 @@ export class ReportsController {
   @ApiQuery({name: 'limit', description: 'pagination quantity', example: 5})
 
   @Get()
-  getReports(@Query() queries: reportQueriesDto) {
-    const userId: number = 1; // TODO: get the real current user_id
-    return this.reportsService.findAllUserReports(userId, queries);
+  getReports(@Query() queries: reportQueriesDto, @GetUser() user : User) {
+    return this.reportsService.findAllUserReports(user.id, queries);
   }
 
 
@@ -44,9 +45,8 @@ export class ReportsController {
   @ApiUnprocessableEntityResponse({description: 'The body contains not wanted content'})
 
   @Post()
-  createReport(@Body() dto: ReportDto) {
-    const userId: number = 1; // TODO: get the real current user_id
-    return this.reportsService.createReport(userId, dto);
+  createReport(@Body() dto: ReportDto,  @GetUser() user : User) {
+    return this.reportsService.createReport(user.id, dto);
   }
 
 
