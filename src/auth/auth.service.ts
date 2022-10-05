@@ -8,9 +8,13 @@ import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
-  constructor(private prisma: PrismaService, private jwt: JwtService, private config: ConfigService) {}
+  constructor(
+    private prisma: PrismaService,
+    private jwt: JwtService,
+    private config: ConfigService,
+  ) {}
 
-  async signup(dto: AuthDto) {
+  async userSignup(dto: AuthDto) {
     const hash = await argon.hash(dto.password);
 
     try {
@@ -19,11 +23,11 @@ export class AuthService {
           email: dto.email,
           hash,
           lastname: dto.lastname,
-          firstname: dto.firstname
+          firstname: dto.firstname,
         },
       });
       delete user.hash;
-      return user;
+      return this.getAccessToken(user.email);
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
         if (error.code === 'P2002') {
@@ -34,7 +38,7 @@ export class AuthService {
     }
   }
 
-  async login(dto: AuthDto) {
+  async userLogin(dto: AuthDto) {
     const user = await this.prisma.user.findUnique({
       where: {
         email: dto.email,
@@ -47,18 +51,53 @@ export class AuthService {
     return this.getAccessToken(user.email);
   }
 
-  async getAccessToken(email: String) {
+  async proSignup(dto: AuthDto) {
+    const hash = await argon.hash(dto.password);
+
+    try {
+      const pro = await this.prisma.pro.create({
+        data: {
+          email: dto.email,
+          hash,
+        },
+      });
+      delete pro.hash;
+      return this.getAccessToken(pro.email);
+    } catch (error) {
+      if (error instanceof PrismaClientKnownRequestError) {
+        if (error.code === 'P2002') {
+          throw new ForbiddenException('Credentials already taken');
+        }
+      }
+      throw error;
+    }
+  }
+
+  async proLogin(dto: AuthDto) {
+    const pro = await this.prisma.pro.findUnique({
+      where: {
+        email: dto.email,
+      },
+    });
+    if (!pro) throw new ForbiddenException('Incorrect email');
+    if (!(await argon.verify(pro.hash, dto.password)))
+      throw new ForbiddenException('Incorrect password');
+    delete pro.hash;
+    return this.getAccessToken(pro.email);
+  }
+
+  async getAccessToken(email: string) {
     const payload = {
-      email
+      email,
     };
     const secret = this.config.get('JWT_SECRET');
 
     const token = await this.jwt.signAsync(payload, {
       expiresIn: '60m',
-      secret
+      secret,
     });
     return {
-      access_token: token
+      access_token: token,
     };
   }
 }

@@ -19,7 +19,6 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
         email: payload.email,
       },
     });
-    delete user.hash;
     return user;
   }
 }

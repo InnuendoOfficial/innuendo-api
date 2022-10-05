@@ -34,24 +34,28 @@ describe('Auth e2e', () => {
     const dto: AuthDto = {
       email: 'toto@epitech.eu',
       password: '4242',
+      isPro: false,
       firstname: 'lucas',
       lastname: 'courteaud'
     }
     const noEmail = {
       email: '',
       password: '4242',
+      isPro: false,
       firstname: 'lucas',
       lastname: 'courteaud'
     }
     const noPassword = {
       email: 'toto@epitech.eu',
       password: '',
+      isPro: false,
       firstname: 'lucas',
       lastname: 'courteaud'
     }
     const incorrectEmail = {
       email: 'toto@epitech',
       password: '4242',
+      isPro: false,
       firstname: 'lucas',
       lastname: 'courteaud'
     }

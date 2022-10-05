@@ -5,28 +5,33 @@ import { IndicatorDto } from './dto';
 
 @Injectable()
 export class IndicatorsService {
-  constructor(private prisma: PrismaService,
-              private indicatorTypesService: IndicatorTypesService) {}
+  constructor(
+    private prisma: PrismaService,
+    private indicatorTypesService: IndicatorTypesService,
+  ) {}
 
   async createIndicator(dto: IndicatorDto, reportId: number) {
     try {
-      const indicatorValue = await this.buildIndicatorValue(dto.indicator_type_id, dto.value);
+      const indicatorValue = await this.buildIndicatorValue(
+        dto.indicator_type_id,
+        dto.value,
+      );
       await this.prisma.indicator.create({
         data: {
           indicator_type: {
-            connect: { id: dto.indicator_type_id }
+            connect: { id: dto.indicator_type_id },
           },
           report: {
-            connect: { id: reportId }
+            connect: { id: reportId },
           },
           value: {
-            create: indicatorValue
-          }
+            create: indicatorValue,
+          },
         },
         include: {
           value: true,
-        }
-      })
+        },
+      });
     } catch (error) {
       throw error;
     }
@@ -34,16 +39,19 @@ export class IndicatorsService {
 
   async updateIndicator(dto: IndicatorDto) {
     try {
-      const indicatorValue = await this.buildIndicatorValue(dto.indicator_type_id, dto.value);
+      const indicatorValue = await this.buildIndicatorValue(
+        dto.indicator_type_id,
+        dto.value,
+      );
 
       await this.prisma.indicator.update({
-        where: { id:  dto.id },
+        where: { id: dto.id },
         data: {
           value: {
-            update: indicatorValue
-          }
-        }
-      })
+            update: indicatorValue,
+          },
+        },
+      });
     } catch (error) {
       throw error;
     }
@@ -51,7 +59,8 @@ export class IndicatorsService {
 
   async buildIndicatorValue(indicatorId: number, indicatorValue: any) {
     try {
-      const indicatorType = await this.indicatorTypesService.findOneIndicatorType(indicatorId);
+      const indicatorType =
+        await this.indicatorTypesService.findOneIndicatorType(indicatorId);
       return {
         [indicatorType.unit_measure]: indicatorValue,
       };

@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import { IndicatorsService } from 'src/indicators/indicators.service';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -6,8 +10,10 @@ import { ReportDto, reportQueriesDto } from './dto';
 
 @Injectable()
 export class ReportsService {
-  constructor(private prisma: PrismaService,
-              private indicatorService: IndicatorsService) {}
+  constructor(
+    private prisma: PrismaService,
+    private indicatorService: IndicatorsService,
+  ) {}
 
   REPORT_FIELDS_SELECTOR = {
     indicators: {
@@ -15,27 +21,29 @@ export class ReportsService {
         id: true,
         indicator_type_id: true,
         value: true,
-      }
-    }
-  }
+      },
+    },
+  };
 
   async findAllUserReports(userId: number, queries: reportQueriesDto) {
     try {
       const { start, end, offset, limit } = queries;
       console.log(queries);
       if (end && !start) {
-        throw new BadRequestException("You should always use 'end' query with 'start'.")
+        throw new BadRequestException(
+          "You should always use 'end' query with 'start'.",
+        );
       }
       const dateQuery = {
         AND: [
           {
-            date: { lte: end ? new Date(end) : new Date(Date.now()) }
+            date: { lte: end ? new Date(end) : new Date(Date.now()) },
           },
           {
-            date: { gte: start ? new Date(start) : new Date(null) }
-          }
-        ]
-      }
+            date: { gte: start ? new Date(start) : new Date(null) },
+          },
+        ],
+      };
       const reports = await this.prisma.report.findMany({
         ...(offset && { skip: offset }),
         ...(limit && { take: limit }),
@@ -74,11 +82,11 @@ export class ReportsService {
         data: {
           user_id: userId,
           date: dto.date ? new Date(dto.date) : new Date(Date.now()),
-        }
-      })
-      dto.indicators.forEach(async indicator => {
+        },
+      });
+      dto.indicators.forEach(async (indicator) => {
         await this.indicatorService.createIndicator(indicator, report.id);
-      })
+      });
       return report;
     } catch (error) {
       throw error;
@@ -91,11 +99,11 @@ export class ReportsService {
         where: { id: +id },
         data: {
           date: dto.date,
-        }
-      })
-      dto.indicators.forEach(async indicator => {
+        },
+      });
+      dto.indicators.forEach(async (indicator) => {
         await this.indicatorService.updateIndicator(indicator);
-      })
+      });
       return await this.findUserReportById(id);
     } catch (error) {
       if (
@@ -111,8 +119,8 @@ export class ReportsService {
   async deleteReport(id: number) {
     try {
       await this.prisma.report.delete({
-        where: { id: id }
-      })
+        where: { id: id },
+      });
       return { msg: `Report ${id} successfully deleted.` };
     } catch (error) {
       if (

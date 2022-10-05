@@ -26,6 +26,16 @@ model User {
   @@map("users")
 }
 
+
+model Pro {
+  id Int @id @default(autoincrement())
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  email String @unique
+  hash String
+}
+
 model IndicatorType {
   id Int @id @default(autoincrement())
 

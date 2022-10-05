@@ -8,5 +8,4 @@ import { IndicatorsService } from './indicators.service';
   providers: [IndicatorsService],
   exports: [IndicatorsService],
 })
-
 export class IndicatorsModule {}
