@@ -7,6 +7,7 @@ import { UserModule } from './user/user.module';
 import { ReportsModule } from './reports/reports.module';
 import { IndicatorsService } from './indicators/indicators.service';
 import { IndicatorsModule } from './indicators/indicators.module';
+import { NewsletterModule } from './newsletter/newsletter.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { IndicatorsModule } from './indicators/indicators.module';
     IndicatorTypesModule,
     ReportsModule,
     IndicatorsModule,
+    NewsletterModule,
   ],
   providers: [IndicatorsService],
 })
