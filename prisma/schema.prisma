@@ -70,6 +70,13 @@ model Report {
   user User @relation(fields: [user_id], references: [id])
   user_id Int
 }
+model Prospect {
+  id Int @id @default(autoincrement())
+
+  email String
+  name String
+  object String
+}
 
 enum UnitMeasure {
   int
