@@ -8,6 +8,9 @@ import { ReportsModule } from './reports/reports.module';
 import { IndicatorsService } from './indicators/indicators.service';
 import { IndicatorsModule } from './indicators/indicators.module';
 import { NewsletterModule } from './newsletter/newsletter.module';
+import { SubscriptionRequestModule } from './subscription_request/subscription_request.module';
+import { ProController } from './pro/pro.controller';
+import { ProModule } from './pro/pro.module';
 
 @Module({
   imports: [
@@ -19,6 +22,8 @@ import { NewsletterModule } from './newsletter/newsletter.module';
     ReportsModule,
     IndicatorsModule,
     NewsletterModule,
+    SubscriptionRequestModule,
+    ProModule,
   ],
   providers: [IndicatorsService],
 })
