@@ -8,8 +8,8 @@ import {
   Put,
 } from '@nestjs/common';
 import { ApiOkResponse, ApiForbiddenResponse, ApiNotFoundResponse, ApiParam, ApiTags, ApiCreatedResponse, ApiUnprocessableEntityResponse, ApiAcceptedResponse, ApiNoContentResponse } from '@nestjs/swagger';
-import { indicatorTypeDto } from './dto';
-import { IndicatorTypesService } from './indicatorTypes.service';
+import { symptomTypeDto } from './dto';
+import { IndicatorTypesService } from './symptomTypes.service';
 
 @ApiTags('Indicator Types')
 @Controller('indicator_types')
@@ -43,7 +43,7 @@ export class IndicatorTypesController {
   @ApiUnprocessableEntityResponse({description: 'The body contains not wanted content'})
 
   @Post()
-  createIndicatorType(@Body() dto: indicatorTypeDto) {
+  createIndicatorType(@Body() dto: symptomTypeDto) {
     return this.indicatorTypesService.createIndicatorType(dto);
   }
 
@@ -55,7 +55,7 @@ export class IndicatorTypesController {
   @ApiNotFoundResponse({description: 'The ressource does not exist'})
 
   @Put(':id')
-  updateIndicatorType(@Param('id') id: string, @Body() dto: indicatorTypeDto) {
+  updateIndicatorType(@Param('id') id: string, @Body() dto: symptomTypeDto) {
     return this.indicatorTypesService.updateIndicatorType(id, dto);
   }
 

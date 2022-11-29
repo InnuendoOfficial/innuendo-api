@@ -2,14 +2,13 @@ import { Module } from '@nestjs/common';
 import { AuthModule } from './auth/auth.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { ConfigModule } from '@nestjs/config';
-import { IndicatorTypesModule } from './indicatorTypes/indicatorTypes.module';
+import { IndicatorTypesModule } from './symptomTypes/symptomTypes.module';
 import { UserModule } from './user/user.module';
 import { ReportsModule } from './reports/reports.module';
-import { IndicatorsService } from './indicators/indicators.service';
-import { IndicatorsModule } from './indicators/indicators.module';
+import { SymptomsService } from './symptoms/symptoms.service';
+import { IndicatorsModule } from './symptoms/symptoms.module';
 import { NewsletterModule } from './newsletter/newsletter.module';
 import { SubscriptionRequestModule } from './subscription_request/subscription_request.module';
-import { ProController } from './pro/pro.controller';
 import { ProModule } from './pro/pro.module';
 
 @Module({
@@ -25,6 +24,6 @@ import { ProModule } from './pro/pro.module';
     SubscriptionRequestModule,
     ProModule,
   ],
-  providers: [IndicatorsService],
+  providers: [SymptomsService],
 })
 export class AppModule {}

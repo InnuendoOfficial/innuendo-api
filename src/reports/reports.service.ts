@@ -1,19 +1,19 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
-import { IndicatorsService } from 'src/indicators/indicators.service';
+import { SymptomsService } from 'src/symptoms/symptoms.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ReportDto, reportQueriesDto } from './dto';
 
 @Injectable()
 export class ReportsService {
   constructor(private prisma: PrismaService,
-              private indicatorService: IndicatorsService) {}
+              private indicatorService: SymptomsService) {}
 
   REPORT_FIELDS_SELECTOR = {
-    indicators: {
+    symptoms: {
       select: {
         id: true,
-        indicator_type_id: true,
+        symptom_type_id: true,
         value: true,
       }
     }

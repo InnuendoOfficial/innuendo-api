@@ -36,46 +36,46 @@ model pro {
   hash String
 }
 
-model IndicatorType {
+model SymptomType {
   id Int @id @default(autoincrement())
 
   name String
   unit_measure UnitMeasure
 
-  indicators Indicator[]
+  symptoms Symptom[]
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 }
 
-model Indicator {
+model Symptom {
   id Int @id @default(autoincrement())
 
-  value IndicatorValue?
+  value SymptomValue?
 
-  indicator_type IndicatorType @relation(fields: [indicator_type_id], references: [id])
+  symptom_type SymptomType @relation(fields: [symptom_type_id], references: [id])
   report Report @relation(fields: [report_id], references: [id], onDelete: Cascade)
 
-  indicator_type_id Int
+  symptom_type_id Int
   report_id Int
 }
 
-model IndicatorValue {
+model SymptomValue {
   id Int @id @default(autoincrement())
 
   int Int?
   string String?
 
-  indicator Indicator @relation(fields: [indicator_id], references: [id], onDelete: Cascade)
+  symptom Symptom @relation(fields: [symptom_id], references: [id], onDelete: Cascade)
 
-  indicator_id Int @unique
+  symptom_id Int @unique
 }
 
 model Report {
   id Int @id @default(autoincrement())
 
   date DateTime @default(now())
-  indicators Indicator[]
+  symptoms Symptom[]
 
   user User @relation(fields: [user_id], references: [id])
   user_id Int
