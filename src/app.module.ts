@@ -10,6 +10,9 @@ import { IndicatorsModule } from './symptoms/symptoms.module';
 import { NewsletterModule } from './newsletter/newsletter.module';
 import { SubscriptionRequestModule } from './subscription_request/subscription_request.module';
 import { ProModule } from './pro/pro.module';
+import { CodeModule } from './code/code.module';
+import { ReportsService } from './reports/reports.service';
+import { AuthService } from './auth/auth.service';
 
 @Module({
   imports: [
@@ -23,6 +26,7 @@ import { ProModule } from './pro/pro.module';
     NewsletterModule,
     SubscriptionRequestModule,
     ProModule,
+    CodeModule,
   ],
   providers: [SymptomsService],
 })

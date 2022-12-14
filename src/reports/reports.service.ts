@@ -9,7 +9,13 @@ export class ReportsService {
   constructor(private prisma: PrismaService,
               private indicatorService: SymptomsService) {}
 
-  REPORT_FIELDS_SELECTOR = {
+  private defaultQueries = {
+    start: null,
+    end: null,
+    offset: null,
+    limit: null,
+  }
+  private REPORT_FIELDS_SELECTOR = {
     symptoms: {
       select: {
         id: true,
@@ -19,10 +25,9 @@ export class ReportsService {
     }
   }
 
-  async findAllUserReports(userId: number, queries: reportQueriesDto) {
+  async findAllUserReports(userId: number, queries: reportQueriesDto = this.defaultQueries) {
     try {
       const { start, end, offset, limit } = queries;
-      console.log(queries);
       if (end && !start) {
         throw new BadRequestException("You should always use 'end' query with 'start'.")
       }

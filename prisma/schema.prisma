@@ -23,6 +23,7 @@ model User {
   lastname String?
 
   reports Report[]
+  access_codes AccessCode[]
   @@map("users")
 }
 
@@ -80,6 +81,28 @@ model Report {
   user User @relation(fields: [user_id], references: [id])
   user_id Int
 }
+
+model AccessCode {
+  id Int @id @default(autoincrement())
+  created_at DateTime @default(now())
+
+  value Int
+  preferences AccessCodePreferences[]
+
+  user User @relation(fields: [user_id], references: [id])
+  user_id Int
+}
+
+model AccessCodePreferences {
+  id Int @id @default(autoincrement())
+
+  symptom_id Int
+  showable Boolean
+
+  access_code AccessCode @relation(fields: [access_code_id], references: [id], onDelete: Cascade)
+  access_code_id Int
+}
+
 model Prospect {
   id Int @id @default(autoincrement())
 
