@@ -24,6 +24,25 @@ export class ReportsService {
       }
     }
   }
+  private async formatSymptoms(symptoms) {
+    return await Promise.all(symptoms.map(async symptom => {
+      const symptomType = await this.prisma.symptomType.findUnique({
+        where: { id: symptom.symptom_type_id }
+      });
+      
+      delete symptom.symptom_type_id;
+      symptom['symptom_type_name'] = symptomType.name;
+      symptom['symptom_type_unit_measure'] = symptomType.unit_measure;
+      symptom.value = symptom.value[symptomType.unit_measure];
+      return symptom;
+    }));
+  }
+  private async formatReports(reports) {
+    return await Promise.all(reports.map(async report => {
+      report.symptoms = await this.formatSymptoms(report.symptoms);
+      return report;
+    }));
+  }
 
   async findAllUserReports(userId: number, queries: reportQueriesDto = this.defaultQueries) {
     try {
@@ -50,7 +69,7 @@ export class ReportsService {
         },
         include: this.REPORT_FIELDS_SELECTOR,
       });
-      return reports;
+      return await this.formatReports(reports);
     } catch (error) {
       throw error;
     }
@@ -67,6 +86,7 @@ export class ReportsService {
       if (!report) {
         throw new NotFoundException('Record does not exist.');
       }
+      report.symptoms = await this.formatSymptoms(report.symptoms);
       return report;
     } catch (error) {
       throw error;
