@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { IndicatorTypesController } from './indicatorTypes.controller';
-import { IndicatorTypesService } from './indicatorTypes.service';
+import { IndicatorTypesController } from './symptomTypes.controller';
+import { IndicatorTypesService } from './symptomTypes.service';
 
 @Module({
   controllers: [IndicatorTypesController],

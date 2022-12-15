@@ -1,28 +1,52 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
-import { IndicatorsService } from 'src/indicators/indicators.service';
+import { SymptomsService } from 'src/symptoms/symptoms.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ReportDto, reportQueriesDto } from './dto';
 
 @Injectable()
 export class ReportsService {
   constructor(private prisma: PrismaService,
-              private indicatorService: IndicatorsService) {}
+              private indicatorService: SymptomsService) {}
 
-  REPORT_FIELDS_SELECTOR = {
-    indicators: {
+  private defaultQueries = {
+    start: null,
+    end: null,
+    offset: null,
+    limit: null,
+  }
+  private REPORT_FIELDS_SELECTOR = {
+    symptoms: {
       select: {
         id: true,
-        indicator_type_id: true,
+        symptom_type_id: true,
         value: true,
       }
     }
   }
+  private async formatSymptoms(symptoms) {
+    return await Promise.all(symptoms.map(async symptom => {
+      const symptomType = await this.prisma.symptomType.findUnique({
+        where: { id: symptom.symptom_type_id }
+      });
+      
+      delete symptom.symptom_type_id;
+      symptom['symptom_type_name'] = symptomType.name;
+      symptom['symptom_type_unit_measure'] = symptomType.unit_measure;
+      symptom.value = symptom.value[symptomType.unit_measure];
+      return symptom;
+    }));
+  }
+  private async formatReports(reports) {
+    return await Promise.all(reports.map(async report => {
+      report.symptoms = await this.formatSymptoms(report.symptoms);
+      return report;
+    }));
+  }
 
-  async findAllUserReports(userId: number, queries: reportQueriesDto) {
+  async findAllUserReports(userId: number, queries: reportQueriesDto = this.defaultQueries) {
     try {
       const { start, end, offset, limit } = queries;
-      console.log(queries);
       if (end && !start) {
         throw new BadRequestException("You should always use 'end' query with 'start'.")
       }
@@ -45,7 +69,7 @@ export class ReportsService {
         },
         include: this.REPORT_FIELDS_SELECTOR,
       });
-      return reports;
+      return await this.formatReports(reports);
     } catch (error) {
       throw error;
     }
@@ -62,6 +86,7 @@ export class ReportsService {
       if (!report) {
         throw new NotFoundException('Record does not exist.');
       }
+      report.symptoms = await this.formatSymptoms(report.symptoms);
       return report;
     } catch (error) {
       throw error;

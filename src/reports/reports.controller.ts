@@ -52,7 +52,7 @@ export class ReportsController {
 
   // PUT :id
   // TODO: add auth guard to check if user has permission to access to the report
-  @ApiParam({name: 'id', description: 'id of the wanted indicator type'})
+  @ApiParam({name: 'id', description: 'id of the wanted symtom type'})
   @ApiNoContentResponse({description: 'Ressource has been updated successfully'})
   @ApiForbiddenResponse({ description: 'Unauthorized Request' })
   @ApiNotFoundResponse({description: 'The ressource does not exist'})

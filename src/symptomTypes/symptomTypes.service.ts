@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaClientKnownRequestError, PrismaClientValidationError } from '@prisma/client/runtime';
 import { PrismaService } from '../prisma/prisma.service';
-import { indicatorTypeDto } from './dto';
+import { symptomTypeDto } from './dto';
 
 @Injectable()
 export class IndicatorTypesService {
@@ -9,8 +9,8 @@ export class IndicatorTypesService {
 
   async findAllIndicatorTypes() {
     try {
-      const indicatorTypes = await this.prisma.indicatorType.findMany();
-      return indicatorTypes;
+      const symptomTypes = await this.prisma.symptomType.findMany();
+      return symptomTypes;
     } catch (error) {
       throw error;
     }
@@ -18,26 +18,26 @@ export class IndicatorTypesService {
 
   async findOneIndicatorType(id: number) {
     try {
-      const indicatorType = await this.prisma.indicatorType.findUnique({
+      const symptomType = await this.prisma.symptomType.findUnique({
         where: { id: id },
       });
-      if (!indicatorType) {
+      if (!symptomType) {
         throw new NotFoundException('Record does not exist.');
       }
-      return indicatorType;
+      return symptomType;
     } catch (error) {
       throw error;
     }
   }
 
-  async createIndicatorType(dto: indicatorTypeDto) {
+  async createIndicatorType(dto: symptomTypeDto) {
     try {
-      const indicatorType = await this.prisma.indicatorType.create({
+      const symptomType = await this.prisma.symptomType.create({
         data: {
           ...dto,
         },
       });
-      return indicatorType;
+      return symptomType;
     } catch (error) {
       if (error instanceof PrismaClientValidationError) {
         throw new BadRequestException('Indicator type provided is not valid.');
@@ -48,7 +48,7 @@ export class IndicatorTypesService {
 
   async deleteIndicatorType(id: string) {
     try {
-      await this.prisma.indicatorType.delete({
+      await this.prisma.symptomType.delete({
         where: { id: +id },
       });
       return { msg: `IndicatorType ${id} successfully deleted.` };
@@ -63,13 +63,13 @@ export class IndicatorTypesService {
     }
   }
 
-  async updateIndicatorType(id: string, dto: indicatorTypeDto) {
+  async updateIndicatorType(id: string, dto: symptomTypeDto) {
     try {
-      const indicatorType = await this.prisma.indicatorType.update({
+      const symptomType = await this.prisma.symptomType.update({
         where: { id: +id },
         data: { ...dto },
       });
-      return indicatorType;
+      return symptomType;
     } catch (error) {
       if (
         error instanceof PrismaClientKnownRequestError &&
