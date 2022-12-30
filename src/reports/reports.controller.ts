@@ -1,13 +1,15 @@
-import { Body, Controller, Get, Post, Param, Delete, Query, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Param, Delete, Query, Put, UseGuards, InternalServerErrorException } from '@nestjs/common';
 import { ApiCreatedResponse, ApiForbiddenResponse, ApiNoContentResponse, ApiNotFoundResponse, ApiOkResponse, ApiParam, ApiQuery, ApiTags, ApiUnprocessableEntityResponse } from '@nestjs/swagger';
 import { User } from '@prisma/client';
 import { GetUser } from 'src/auth/decorator';
 import { JwtGuard } from 'src/auth/guard';
 import { ReportDto, reportQueriesDto } from './dto';
 import { ReportsService } from './reports.service';
-
+import { UseInterceptors } from '@nestjs/common';
+import { SentryInterceptor } from 'src/sentry.interceptor';
 @ApiTags('Reports')
 
+@UseInterceptors(SentryInterceptor)
 @UseGuards(JwtGuard)
 @Controller('reports')
 export class ReportsController {
@@ -23,6 +25,8 @@ export class ReportsController {
 
   @Get()
   getReports(@Query() queries: reportQueriesDto, @GetUser() user : User) {
+    throw new InternalServerErrorException();
+
     return this.reportsService.findAllUserReports(user.id, queries);
   }
 

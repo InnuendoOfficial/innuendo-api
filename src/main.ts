@@ -2,11 +2,13 @@ import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import * as Sentry from '@sentry/node';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
   app.enableCors();
+
   // Swagger (documentation) setup)
   const config = new DocumentBuilder()
     .setTitle('Innuendo')
@@ -15,6 +17,10 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('doc', app, document);
+
+  Sentry.init({
+    dsn: process.env.SENTRY_DNS,
+  });
 
   const PORT = process.env.PORT || 5000;
   await app.listen(PORT);
