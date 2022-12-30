@@ -31,6 +31,7 @@ export class ReportsService {
       });
       
       delete symptom.symptom_type_id;
+      symptom['symptom_type_id'] = symptomType.id;
       symptom['symptom_type_name'] = symptomType.name;
       symptom['symptom_type_unit_measure'] = symptomType.unit_measure;
       symptom.value = symptom.value[symptomType.unit_measure];

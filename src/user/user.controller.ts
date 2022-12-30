@@ -4,7 +4,9 @@ import { ApiCreatedResponse, ApiInternalServerErrorResponse, ApiUnauthorizedResp
 import { GetUser } from '../auth/decorator';
 import { JwtGuard } from '../auth/guard';
 import { UserService } from './user.service';
-
+import { UseInterceptors } from '@nestjs/common';
+import { SentryInterceptor } from 'src/sentry.interceptor';
+@UseInterceptors(SentryInterceptor)
 @UseGuards(JwtGuard)
 @Controller('user')
 export class UserController {

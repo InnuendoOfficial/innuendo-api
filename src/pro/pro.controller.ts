@@ -4,9 +4,11 @@ import { JwtGuard } from 'src/auth/guard';
 import { CreateProDto } from './dto';
 import { ProAuthDto } from './dto/auth.dto';
 import { ProService } from './pro.service';
-
+import { UseInterceptors } from '@nestjs/common';
+import { SentryInterceptor } from 'src/sentry.interceptor';
 @ApiTags('Pro')
 
+@UseInterceptors(SentryInterceptor)
 @Controller('pro')
 export class ProController {
   constructor(private proService: ProService) {}
