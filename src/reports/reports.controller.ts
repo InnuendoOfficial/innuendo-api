@@ -25,8 +25,6 @@ export class ReportsController {
 
   @Get()
   getReports(@Query() queries: reportQueriesDto, @GetUser() user : User) {
-    throw new InternalServerErrorException();
-
     return this.reportsService.findAllUserReports(user.id, queries);
   }
 
