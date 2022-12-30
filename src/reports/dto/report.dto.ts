@@ -6,5 +6,5 @@ export class ReportDto {
   date: Date;
 
   @IsNotEmpty()
-  indicators: SymptomDto[];
+  symptoms: SymptomDto[];
 }

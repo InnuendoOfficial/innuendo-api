@@ -101,7 +101,7 @@ export class ReportsService {
           date: dto.date ? new Date(dto.date) : new Date(Date.now()),
         }
       })
-      dto.indicators.forEach(async indicator => {
+      dto.symptoms.forEach(async indicator => {
         await this.indicatorService.createIndicator(indicator, report.id);
       })
       return report;
@@ -118,7 +118,7 @@ export class ReportsService {
           date: dto.date,
         }
       })
-      dto.indicators.forEach(async indicator => {
+      dto.symptoms.forEach(async indicator => {
         await this.indicatorService.updateIndicator(indicator);
       })
       return await this.findUserReportById(id);

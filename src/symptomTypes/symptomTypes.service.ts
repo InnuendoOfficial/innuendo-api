@@ -22,7 +22,7 @@ export class IndicatorTypesService {
         where: { id: id },
       });
       if (!symptomType) {
-        throw new NotFoundException('Record does not exist.');
+        throw new NotFoundException(`SymptomType ${id} doesn't exist`);
       }
       return symptomType;
     } catch (error) {
@@ -40,7 +40,7 @@ export class IndicatorTypesService {
       return symptomType;
     } catch (error) {
       if (error instanceof PrismaClientValidationError) {
-        throw new BadRequestException('Indicator type provided is not valid.');
+        throw new BadRequestException('SymptomType provided is not valid.');
       }
       throw error;
     }
@@ -51,7 +51,7 @@ export class IndicatorTypesService {
       await this.prisma.symptomType.delete({
         where: { id: +id },
       });
-      return { msg: `IndicatorType ${id} successfully deleted.` };
+      return { msg: `SymptomType ${id} successfully deleted.` };
     } catch (error) {
       if (
         error instanceof PrismaClientKnownRequestError &&
