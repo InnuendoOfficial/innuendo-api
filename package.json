@@ -42,6 +42,7 @@
     "@nestjs/swagger": "^5.2.1",
     "@prisma/client": "^4.1.1",
     "@sentry/node": "^5.9.0",
+    "@sentry/tracing": "^7.29.0",
     "argon2": "^0.28.5",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.13.2",

@@ -102,9 +102,9 @@ export class ReportsService {
           date: dto.date ? new Date(dto.date) : new Date(Date.now()),
         }
       })
-      dto.symptoms.forEach(async indicator => {
-        await this.indicatorService.createSymptom(indicator, report.id);
-      })
+      for (const symptom of dto.symptoms) {
+        await this.indicatorService.createSymptom(symptom, report.id);
+      }
       return report;
     } catch (error) {
       throw error;

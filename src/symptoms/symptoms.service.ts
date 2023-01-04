@@ -1,7 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { IndicatorTypesService } from 'src/symptomTypes/symptomTypes.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { SymptomDto } from './dto';
+import { PrismaClientKnownRequestError, PrismaClientValidationError } from '@prisma/client/runtime';
 
 @Injectable()
 export class SymptomsService {
@@ -45,7 +46,12 @@ export class SymptomsService {
         }
       })
     } catch (error) {
-      throw error;
+      if (error instanceof PrismaClientValidationError) {
+        console.log(error);
+        throw new BadRequestException(`Symptom's field 'value' must have the type declared in the corresponding SymptomType`)
+      } else {
+        throw error;
+      }
     }
   }
 

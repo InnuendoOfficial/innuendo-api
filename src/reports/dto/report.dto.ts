@@ -1,4 +1,5 @@
-import { IsNotEmpty, IsOptional } from "class-validator";
+import { Type } from "class-transformer";
+import { IsNotEmpty, IsOptional, ValidateNested } from "class-validator";
 import { SymptomDto } from "src/symptoms/dto";
 
 export class ReportDto {
@@ -6,5 +7,7 @@ export class ReportDto {
   date: Date;
 
   @IsNotEmpty()
+  @ValidateNested({ each: true })
+  @Type(() => SymptomDto)
   symptoms: SymptomDto[];
 }
