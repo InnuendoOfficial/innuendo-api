@@ -18,9 +18,9 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('doc', app, document);
 
-  Sentry.init({
-    dsn: process.env.SENTRY_DNS,
-  });
+  if (process.env.SENTRY_DNS)  {
+    Sentry.init({ dsn: process.env.SENTRY_DNS });
+  }
 
   const PORT = process.env.PORT || 5000;
   await app.listen(PORT);

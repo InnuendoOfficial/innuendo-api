@@ -103,7 +103,7 @@ export class ReportsService {
         }
       })
       dto.symptoms.forEach(async indicator => {
-        await this.indicatorService.createIndicator(indicator, report.id);
+        await this.indicatorService.createSymptom(indicator, report.id);
       })
       return report;
     } catch (error) {
@@ -119,9 +119,16 @@ export class ReportsService {
           date: dto.date,
         }
       })
-      dto.symptoms.forEach(async indicator => {
-        await this.indicatorService.updateIndicator(indicator);
-      })
+      const symtoms = await this.prisma.symptom.findMany({ where: { report_id: id } });
+      for (const symptom of dto.symptoms) {
+        const symptomToUpdate = symtoms.find(e => e.symptom_type_id == symptom.symptom_type_id)
+        if (symptomToUpdate) {
+          symptom.id = symptomToUpdate.id;
+          await this.indicatorService.updateSymptom(symptom);
+        } else {
+          await this.indicatorService.createSymptom(symptom, id);
+        }
+      }
       return await this.findUserReportById(id);
     } catch (error) {
       if (

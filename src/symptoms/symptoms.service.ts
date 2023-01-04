@@ -8,7 +8,7 @@ export class SymptomsService {
   constructor(private prisma: PrismaService,
               private symptomTypesService: IndicatorTypesService) {}
 
-  async createIndicator(dto: SymptomDto, reportId: number) {
+  async createSymptom(dto: SymptomDto, reportId: number) {
     try {
       const symptomValue = await this.buildSymptomValue(dto.symptom_type_id, dto.value);
       await this.prisma.symptom.create({
@@ -32,7 +32,7 @@ export class SymptomsService {
     }
   }
 
-  async updateIndicator(dto: SymptomDto) {
+  async updateSymptom(dto: SymptomDto) {
     try {
       const symptomValue = await this.buildSymptomValue(dto.symptom_type_id, dto.value);
 
