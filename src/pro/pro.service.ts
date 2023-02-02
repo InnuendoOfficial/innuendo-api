@@ -62,6 +62,8 @@ export class ProService {
           first_name: subscription_request.first_name,
           last_name: subscription_request.last_name,
           email: subscription_request.email,
+          phone: subscription_request.phone,
+          subscription_type: subscription_request.subscription_type,
           hash,
         }
       });

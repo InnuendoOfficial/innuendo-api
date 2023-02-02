@@ -29,13 +29,16 @@ model User {
   @@map("users")
 }
 
-model pro {
+model Pro {
   id Int @id @default(autoincrement())
 
   first_name String
   last_name String
 
   email String @unique
+
+  phone Int
+  subscription_type String
   hash String
 }
 
