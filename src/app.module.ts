@@ -12,6 +12,7 @@ import { SubscriptionRequestModule } from './subscription_request/subscription_r
 import { ProModule } from './pro/pro.module';
 import { CodeModule } from './code/code.module';
 import { EndoscoresModule } from './endoscores/endoscores.module';
+import { MailModule } from './mail/mail.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { EndoscoresModule } from './endoscores/endoscores.module';
     ProModule,
     CodeModule,
     EndoscoresModule,
+    MailModule,
   ],
   providers: [SymptomsService],
 })
