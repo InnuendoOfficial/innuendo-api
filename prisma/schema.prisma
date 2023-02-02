@@ -29,7 +29,7 @@ model User {
   @@map("users")
 }
 
-model pro {
+model Pro {
   id Int @id @default(autoincrement())
 
   first_name String
