@@ -7,10 +7,16 @@ import { AccessCode } from '@prisma/client';
 import { ReportsService } from 'src/reports/reports.service';
 import { ProAuthDto } from './dto/auth.dto';
 import { AuthService } from 'src/auth/auth.service';
+import { MailService } from 'src/mail/mail.service';
 
 @Injectable()
 export class ProService {
-  constructor(private prisma: PrismaService, private reportService: ReportsService, private authService: AuthService) {}
+  constructor(
+    private prisma: PrismaService,
+    private reportService: ReportsService,
+    private authService: AuthService,
+    private  mailService: MailService,
+  ) {}
 
   private generatePassword() {
     return Math.random().toString(36).slice(-8);
@@ -138,5 +144,16 @@ export class ProService {
       throw new ForbiddenException('Incorrect password');
     delete pro.hash;
     return this.authService.getAccessToken(pro.email);
+  }
+
+  async changePassword(email: string) {
+    const user = await this.prisma.pro.findUnique({
+      where: { email: email },
+    })
+
+    if (user) {
+      const newPassword = 'TOTO974'// generate new password and store it in database
+      await this.mailService.sendForgottenPasswordEmail(user, newPassword);
+    }
   }
 }
