@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { CreateProDto } from './dto';
+import { CreateProDto, ProDto } from './dto';
 import * as argon from 'argon2';
 import { SubscriptionRequestDto } from 'src/subscription_request/dto';
 import { AccessCode } from '@prisma/client';
@@ -8,6 +8,7 @@ import { ReportsService } from 'src/reports/reports.service';
 import { ProAuthDto } from './dto/auth.dto';
 import { AuthService } from 'src/auth/auth.service';
 import { MailService } from 'src/mail/mail.service';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 
 @Injectable()
 export class ProService {
@@ -22,10 +23,16 @@ export class ProService {
     return Math.random().toString(36).slice(-8);
   }
 
-  private async codeIsExpired(code: AccessCode) {
-    const dueDate = new Date(code.created_at);
+  private getDueDate(createAt: Date) {
+    const dueDate = new Date(createAt);
   
     dueDate.setDate(dueDate.getDate() + 2);
+    return dueDate;
+  }
+
+  private async codeIsExpired(code: AccessCode) {
+    const dueDate = this.getDueDate(code.created_at);
+
     if (Number(dueDate) < Date.now()) {
       await this.prisma.accessCode.deleteMany({
         where: { id: code.id }
@@ -35,7 +42,6 @@ export class ProService {
     return false;
   }
   private async selectOnlyShowableSymptoms(reports, preferences) {
-    console.log(preferences)
     return reports.map(report => {
       report.symptoms = report.symptoms.filter(symtom => {
         const pref = preferences.find(pref => pref.symptom_id == symtom.symptom_type_id);
@@ -94,7 +100,10 @@ export class ProService {
         throw new NotFoundException('The code has expired or doesn\'t exist.');
       }
       const reports = await this.reportService.findAllUserReports(code.user_id);
-      return this.selectOnlyShowableSymptoms(reports, code.preferences);
+      return {
+        code_expiracy: this.getDueDate(code.created_at),
+        data: await this.selectOnlyShowableSymptoms(reports, code.preferences)
+      }
     } catch (error) {
       throw error;
     }
@@ -133,6 +142,42 @@ export class ProService {
     }
   }
 
+  async findProById(id: number) {
+    try {
+      const pro = await this.prisma.pro.findUnique({
+        where: { id: id }
+      })
+      if (!pro) {
+        throw new NotFoundException('Pro not found');
+      }
+      delete pro.hash;
+      return pro;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async updateProById(id: number, dto: ProDto) {
+    try {
+      const pro = await this.prisma.pro.update( {
+        where: { id:  id },
+        data: {
+          ...dto
+        }
+      })
+      delete pro.hash;
+      return pro;
+    } catch (error) {
+      if (
+        error instanceof PrismaClientKnownRequestError &&
+        error.code === 'P2025'
+      ) {
+        throw new NotFoundException('Record to update does not exist.');
+      }
+      throw error;
+    }
+  }
+
   async login(dto: ProAuthDto) {
     const pro = await this.prisma.pro.findUnique({
       where: {
@@ -143,7 +188,22 @@ export class ProService {
     if (!(await argon.verify(pro.hash, dto.password)))
       throw new ForbiddenException('Incorrect password');
     delete pro.hash;
-    return this.authService.getAccessToken(pro.email);
+    return this.authService.getAccessToken(pro.id);
+  }
+
+  async changeEmail(id: number, newEmail: string) {
+    try {
+      const pro = await this.prisma.pro.update({
+        where: {id: id},
+        data: {
+          email: newEmail,
+        }
+      })
+      delete pro.hash;
+      return pro;
+    } catch (error) {
+      throw error;
+    }
   }
 
   async changePassword(email: string) {

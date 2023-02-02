@@ -23,7 +23,7 @@ export class AuthService {
         },
       });
       delete user.hash;
-      return this.getAccessToken(user.email);
+      return this.getAccessToken(user.id);
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
         if (error.code === 'P2002') {
@@ -44,12 +44,12 @@ export class AuthService {
     if (!(await argon.verify(user.hash, dto.password)))
       throw new ForbiddenException('Incorrect password');
     delete user.hash;
-    return this.getAccessToken(user.email);
+    return this.getAccessToken(user.id);
   }
 
-  async getAccessToken(email: String) {
+  async getAccessToken(id: number) {
     const payload = {
-      email
+      id
     };
     const secret = this.config.get('JWT_SECRET');
 
@@ -58,6 +58,7 @@ export class AuthService {
       secret
     });
     return {
+      expires_in: 3600,
       access_token: token
     };
   }
