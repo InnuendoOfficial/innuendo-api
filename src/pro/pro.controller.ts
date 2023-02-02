@@ -47,4 +47,9 @@ export class ProController {
   login(@Body() dto: ProAuthDto) {
     return this.proService.login(dto);
   }
+
+  @Post('/forgotten_password')
+  forgottenPassword(@Body('email') email: string) {
+    return this.proService.changePassword(email);
+  }
 }
