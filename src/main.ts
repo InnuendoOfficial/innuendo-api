@@ -21,6 +21,7 @@ async function bootstrap() {
   if (process.env.SENTRY_DNS)  {
     Sentry.init({
       dsn: process.env.SENTRY_DNS,
+      tracesSampleRate: 0.2,
     });
   }
 
