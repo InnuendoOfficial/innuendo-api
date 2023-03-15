@@ -1,6 +1,18 @@
-import { IsNumber } from "class-validator";
+import { IsNumber, IsString } from "class-validator";
 
 export class CreateProDto {
+  @IsString()
+  first_name: string
+
+  @IsString()
+  last_name: string
+
+  @IsString()
+  email: string
+
   @IsNumber()
-  subscription_request_id: number
+  phone: number
+
+  @IsString()
+  subscription_type: string
 }

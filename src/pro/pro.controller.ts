@@ -47,7 +47,7 @@ export class ProController {
   @UseGuards(JwtGuard)
   @Post()
   createPro(@Body() dto: CreateProDto) {
-    return this.proService.createProFromSubsrciptionRequest(dto);
+    return this.proService.createPro(dto);
   }
 
   @UseGuards(JwtGuard)

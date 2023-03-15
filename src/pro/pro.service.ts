@@ -56,7 +56,7 @@ export class ProService {
     })
   }
 
-  async createProFromSubsrciptionRequest(dto: CreateProDto) {
+  async createProFromSubsrciptionRequest(dto) {
     try {
       const subscription_request: SubscriptionRequestDto = await this.prisma.subscriptionRequest.findFirst({
         where: {
@@ -76,6 +76,29 @@ export class ProService {
           email: subscription_request.email,
           phone: subscription_request.phone,
           subscription_type: subscription_request.subscription_type,
+          hash,
+        }
+      });
+      delete pro.hash;
+      pro['password'] = password;
+      return pro;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async createPro(dto: CreateProDto) {
+    try {
+      const password: string = this.generatePassword();
+      const hash = await argon.hash(password);
+
+      const pro = await this.prisma.pro.create({
+        data: {
+          first_name: dto.first_name,
+          last_name: dto.last_name,
+          email: dto.email,
+          phone: dto.phone,
+          subscription_type: dto.subscription_type,
           hash,
         }
       });
