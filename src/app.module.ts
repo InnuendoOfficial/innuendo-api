@@ -13,6 +13,7 @@ import { ProModule } from './pro/pro.module';
 import { CodeModule } from './code/code.module';
 import { EndoscoresModule } from './endoscores/endoscores.module';
 import { MailModule } from './mail/mail.module';
+import { StripeModule } from './stripe/stripe.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { MailModule } from './mail/mail.module';
     CodeModule,
     EndoscoresModule,
     MailModule,
+    StripeModule,
   ],
   providers: [SymptomsService],
 })

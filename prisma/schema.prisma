@@ -40,6 +40,18 @@ model Pro {
   phone Int
   subscription_type String
   hash String
+
+  stripe_customer StripeCustomer?
+  is_subscription_valid Boolean @default(false)
+}
+
+model StripeCustomer {
+  id Int @id @default(autoincrement())
+
+  customer_id String @unique
+  pro Pro @relation(fields: [pro_id], references: [id])
+
+  pro_id Int @unique
 }
 
 model Endoscore {
