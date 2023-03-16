@@ -44,7 +44,6 @@ export class ProController {
   @ApiCreatedResponse({description: 'The ressource has been created'})
   @ApiForbiddenResponse({ description: 'Unauthorized Request' })
 
-  @UseGuards(JwtGuard)
   @Post()
   createPro(@Body() dto: CreateProDto) {
     return this.proService.createPro(dto);
