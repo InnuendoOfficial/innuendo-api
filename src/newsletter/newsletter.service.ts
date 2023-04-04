@@ -1,11 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
+import { MailService } from 'src/mail/mail.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { NewsletterDto } from './dto';
 
 @Injectable()
 export class NewsletterService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService, private mailService: MailService) {}
 
   async createProspect(dto: NewsletterDto) {
     try {
@@ -16,6 +17,7 @@ export class NewsletterService {
           object: dto.Message,
         }
       });
+      await this.mailService.sendNewsletterSubscription(dto.name, dto['exemple-email.com'], dto.Message);
     } catch (error) {
       throw error;
     }

@@ -19,7 +19,7 @@ export class ProService {
     private  mailService: MailService,
   ) {}
 
-  private generatePassword() {
+  generatePassword() {
     return Math.random().toString(36).slice(-8);
   }
 
@@ -240,8 +240,15 @@ export class ProService {
     })
 
     if (user) {
-      const newPassword = 'TOTO974'// generate new password and store it in database
+      const newPassword = this.generatePassword();
+
+      await this.prisma.pro.update({
+        where: { id: user.id },
+        data: { hash: await argon.hash(newPassword) }
+      })
       await this.mailService.sendForgottenPasswordEmail(user, newPassword);
+      return 'password changed.';
     }
+    throw new NotFoundException('No user is linked to this email.');
   }
 }

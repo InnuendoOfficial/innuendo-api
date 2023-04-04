@@ -8,5 +8,6 @@ import { ProService } from './pro.service';
   imports: [ReportsModule, AuthModule],
   controllers: [ProController],
   providers: [ProService],
+  exports: [ProService]
 })
 export class ProModule {}

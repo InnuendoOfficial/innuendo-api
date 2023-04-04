@@ -14,6 +14,8 @@ import { CodeModule } from './code/code.module';
 import { EndoscoresModule } from './endoscores/endoscores.module';
 import { MailModule } from './mail/mail.module';
 import { StripeModule } from './stripe/stripe.module';
+import { SendgridService } from './sendgrid/sendgrid.service';
+import { SendgridModule } from './sendgrid/sendgrid.module';
 
 @Module({
   imports: [
@@ -31,7 +33,8 @@ import { StripeModule } from './stripe/stripe.module';
     EndoscoresModule,
     MailModule,
     StripeModule,
+    SendgridModule,
   ],
-  providers: [SymptomsService],
+  providers: [SymptomsService, SendgridService],
 })
 export class AppModule {}

@@ -1,12 +1,15 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Pro } from '@prisma/client';
+import { MailService } from 'src/mail/mail.service';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { ProService } from 'src/pro/pro.service';
 import Stripe from 'stripe';
+import * as argon from 'argon2';
 
 @Injectable()
 export class StripeService {
-  constructor(private prisma: PrismaService, private config: ConfigService) {}
+  constructor(private prisma: PrismaService, private config: ConfigService, private mailService: MailService, private proService: ProService) {}
 
   private stripe = new Stripe(this.config.get('STRIPE_API_KEY'), {
     apiVersion: '2022-11-15'
@@ -38,7 +41,7 @@ export class StripeService {
     } catch (error) {
       throw error;
     }
-    // TODO: send email with payment link
+    await this.mailService.sendPaymentLink(pro, session.url)
     return session.url;
   }
 
@@ -46,16 +49,18 @@ export class StripeService {
     switch (body.type) {
       case 'checkout.session.completed':
         try {
+          const password = this.proService.generatePassword();
           const stripeCustomer = await this.prisma.stripeCustomer.findUnique({
             where: { customer_id: body.data.object.customer }
           })
-          await this.prisma.pro.update({
+          const user = await this.prisma.pro.update({
             where: { id: stripeCustomer.pro_id },
             data: {
               is_subscription_valid: true,
+              hash: await argon.hash(password)
             }
           })
-          // TODO: send email with credentials
+          await this.mailService.sendCredentialsEmail(user, password);
         } catch (error) {
           throw error;
         }
