@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Pro } from '@prisma/client';
 import { readFileSync } from 'fs';
 import Handlebars from 'handlebars';
@@ -10,10 +10,14 @@ export class MailService {
   constructor(private readonly sendgridService: SendgridService) {}
 
   private compileHandlebar(templateName, context) {
-    const file = readFileSync(join(__dirname, `/templates/${templateName}.hbs`), 'utf-8');
-    const template = Handlebars.compile(file);
-    
-    return template(context);
+    try {
+      const file = readFileSync(join(__dirname, `/templates/${templateName}.hbs`), 'utf-8');
+      const template = Handlebars.compile(file);
+      
+      return template(context);
+    } catch (error) {
+      throw new NotFoundException('Email type not existing.');
+    }
   }
 
   async sendForgottenPasswordEmail(user: Pro, newPassword: string) {
@@ -111,8 +115,31 @@ export class MailService {
       forgotten_password: { name: 'Tristan', password: 'Xv47A3k9Gaa1' },
       credentials: { name: 'Tristan', email: 'tristan.bourgeois@epitech.eu', password: 'Xv47A3k9Gaa1' },
       payment_link: { name: 'Tristan', payment_link: 'https://stripe.com' },
-      newsletter_subscription: { name: 'Marie', email: 'marieclaire@gmail.com', object: 'Je veux m’informer des informations sur votre applications.' }
+      newsletter_subscription: { name: 'Marie', email: 'marieclaire@gmail.com', object: 'Je veux m’informer des informations sur votre applications.' },
+      newsletter: {text: 'Voila un text personalisé'}
     }
     return this.compileHandlebar(emailTag, contexts[emailTag]);
+  }
+
+  async sendEmailToContactList(contactList, text) {
+    try {
+      contactList.forEach(async contact => {
+        const mail = {
+          to: contact,
+          subject: 'Nouveau message de l\'équipe Innuendo',
+          from: 'noreply@em3594.innuendo.ovh',
+          html: this.compileHandlebar(
+            'newsletter',
+            {
+              text
+            }
+          ),
+        };
+        await this.sendgridService.send(mail);
+      });
+    } catch (error) {
+      throw new InternalServerErrorException("Mailing service not working")
+    }
+    return "email sents";
   }
 }

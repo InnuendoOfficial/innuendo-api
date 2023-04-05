@@ -1,7 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { end } from 'pactum/src/exports/reporter';
-import { NotFoundError } from 'rxjs';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ReportsService } from 'src/reports/reports.service';
 
