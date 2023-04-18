@@ -16,11 +16,15 @@ import { MailModule } from './mail/mail.module';
 import { StripeModule } from './stripe/stripe.module';
 import { SendgridService } from './sendgrid/sendgrid.service';
 import { SendgridModule } from './sendgrid/sendgrid.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { NotificationsService } from './notifications/notifications.service';
+
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     AuthModule,
+    ScheduleModule.forRoot(),
     UserModule,
     PrismaModule,
     IndicatorTypesModule,
@@ -35,6 +39,6 @@ import { SendgridModule } from './sendgrid/sendgrid.module';
     StripeModule,
     SendgridModule,
   ],
-  providers: [SymptomsService, SendgridService],
+  providers: [SymptomsService, SendgridService, NotificationsService],
 })
 export class AppModule {}

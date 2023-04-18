@@ -1,4 +1,4 @@
-import { Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { ApiCreatedResponse, ApiInternalServerErrorResponse, ApiUnauthorizedResponse} from '@nestjs/swagger';
 import { GetUser } from '../auth/decorator';
@@ -28,5 +28,9 @@ export class UserController {
     @Post('delete')
     deleteMe(@GetUser() user: User) {
         return this.userService.deleteById(user);
+    }
+    @Post("device_id")
+    linkDeviceId(@GetUser() user: User, @Body("device_id") deviceId: string) {
+        return this.userService.linkDeviceId(user, deviceId);
     }
 }
