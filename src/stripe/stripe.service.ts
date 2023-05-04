@@ -27,8 +27,8 @@ export class StripeService {
           quantity: 1,
         },
       ],
-      success_url: 'https://example.com/success.html?session_id={CHECKOUT_SESSION_ID}',
-      cancel_url: 'https://example.com/canceled.html',
+      success_url: 'https://innuendo-app.herokuapp.com/paiementsucceed?session_id={CHECKOUT_SESSION_ID}',
+      cancel_url: 'https://innuendo-app.herokuapp.com/paiementfailed',
       customer: customer.id
     })
     try {
