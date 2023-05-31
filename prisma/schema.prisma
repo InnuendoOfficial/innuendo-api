@@ -58,7 +58,7 @@ model StripeCustomer {
 model Endoscore {
   id Int @id @default(autoincrement())
 
-  score Int
+  score Float
   user User @relation(fields: [user_id], references: [id])
 
   user_id Int

@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { User } from '@prisma/client';
+import axios from 'axios';
 import { end } from 'pactum/src/exports/reporter';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ReportsService } from 'src/reports/reports.service';
@@ -46,12 +47,13 @@ export class EndoscoresService {
     try {
       const reports = await this.reportservice.findAllUserReports(user.id);
       
-      // requete sur l'ia pour chopper l'endoscore
-      const endoscore = Math.floor(Math.random() * 10);
-      
+      const res = await axios.post("http://20.234.134.41:8081/endoScore", {
+        code_expiracy: null,
+        data: reports
+      });      
       return await this.prismaService.endoscore.create({
         data: {
-          score: endoscore,
+          score: res.data.endoScore,
           user_id: user.id,
         }
       });
