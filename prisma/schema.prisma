@@ -19,9 +19,10 @@ model User {
 
   email String @unique
   hash String
-
   firstname String?
   lastname String?
+
+  has_endometriosis EndoStatus @default(undefined)
 
   reports Report[]
   access_codes AccessCode[]
@@ -156,4 +157,10 @@ model SubscriptionRequest {
 enum UnitMeasure {
   int
   string
+}
+
+enum EndoStatus {
+  true
+  false
+  undefined
 }

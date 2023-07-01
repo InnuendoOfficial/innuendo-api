@@ -49,6 +49,7 @@ export class EndoscoresService {
       
       const res = await axios.post("http://20.234.134.41:8081/endoScore", {
         code_expiracy: null,
+        has_endometriosis: user.has_endometriosis,
         data: reports
       });      
       return await this.prismaService.endoscore.create({
