@@ -26,8 +26,8 @@ export class UserController {
     @ApiCreatedResponse({description: 'User deleted successfully'})
 
     @Post('delete')
-    deleteMe(@GetUser() user: User) {
-        return this.userService.deleteById(user);
+    deleteMe(@GetUser() user: User, @Body('desactivate') desactivate: boolean) {
+        return this.userService.deleteById(user, desactivate);
     }
     @Post("device_id")
     linkDeviceId(@GetUser() user: User, @Body("device_id") deviceId: string) {

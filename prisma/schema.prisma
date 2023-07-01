@@ -59,7 +59,7 @@ model Endoscore {
   id Int @id @default(autoincrement())
 
   score Float
-  user User @relation(fields: [user_id], references: [id])
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   user_id Int
 
@@ -107,8 +107,8 @@ model Report {
   date DateTime @default(now())
   symptoms Symptom[]
 
-  user User @relation(fields: [user_id], references: [id])
-  user_id Int
+  user User? @relation(fields: [user_id], references: [id], onDelete:  SetNull)
+  user_id Int?
 }
 
 model AccessCode {
@@ -118,7 +118,7 @@ model AccessCode {
   value Int
   preferences AccessCodePreferences[]
 
-  user User @relation(fields: [user_id], references: [id])
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
   user_id Int
 }
 
