@@ -41,6 +41,7 @@ export class ProService {
     }
     return false;
   }
+
   private async selectOnlyShowableSymptoms(reports, preferences) {
     return reports.map(report => {
       report.symptoms = report.symptoms.filter(symtom => {

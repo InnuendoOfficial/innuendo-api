@@ -1,12 +1,28 @@
-import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { User } from '@prisma/client';
-import { throwError } from 'rxjs';
-import { UpdateUserDto } from './dto';
+import { ResetPasswordDto, UpdateUserDto } from './dto';
+import { MailService } from 'src/mail/mail.service';
+import * as argon from 'argon2';
+
 
 @Injectable()
 export class UserService {
-    constructor(private prisma: PrismaService) {}
+    constructor(private prisma: PrismaService, private mailingService: MailService) {}
+
+    private generateRandom(): number {
+        const min = 1000;
+        const max = 999999;
+    
+        let difference = max - min;
+    
+        let rand = Math.random();
+    
+        rand = Math.floor( rand * difference);
+    
+        rand = rand + min;
+        return rand;
+    }
 
     async deleteById(user, desactivate) {
         if (!user) {
@@ -54,6 +70,52 @@ export class UserService {
                 }
             })
             return 'Device successfully added.';
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async sendResetPasswordLink(email: string) {
+        if (!email) {
+            throw new NotFoundException("user doesn't exist.")
+          }
+        try {
+          const user = await this.prisma.user.findUnique({
+            where: { email: email }
+          })
+          console.log(user, email)
+          if (!user) {
+            throw new NotFoundException("user doesn't exist.")
+          }
+          const code = await this.prisma.passwordResetCode.create({
+            data: {
+                value: this.generateRandom(),
+                email: user.email
+            }
+          })
+          await this.mailingService.sendForgottenPasswordLink(user.firstname, user.email, `https://innuendo-app.herokuapp.com/reset?code=${code.value}`);
+          return 'email sent.'
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async resetPassword(dto: ResetPasswordDto) {
+        if (!dto.code) {
+            throw new NotFoundException("You must provide a code.")
+        }
+        try {
+            const resetCode = await this.prisma.passwordResetCode.findFirst({
+                where: { value: dto.code }
+            })
+            if (!resetCode) {
+                throw new NotFoundException("Code is not valid.")
+            }
+            await this.prisma.user.update({
+                where: { email: resetCode.email },
+                data: { hash: await argon.hash(dto.password) }
+            })
+            return 'password changed.';
         } catch (error) {
             throw error;
         }

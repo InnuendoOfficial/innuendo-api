@@ -154,6 +154,13 @@ model SubscriptionRequest {
   subscription_type String
 }
 
+model PasswordResetCode {
+  id Int @id @default(autoincrement())
+
+  value Int
+  email String
+}
+
 enum UnitMeasure {
   int
   string

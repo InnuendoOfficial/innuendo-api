@@ -110,13 +110,37 @@ export class MailService {
     return "email sent";
   }
 
+  async sendForgottenPasswordLink(name: string, email: string, link: string) {
+    const mail = {
+      to: email,
+      subject: 'Réinitialiser votre mot de passe',
+      from: 'noreply@em3594.innuendo.ovh',
+      html: this.compileHandlebar(
+        'forgotten_password_link',
+        {
+          name,
+          email,
+          link
+        }
+      ),
+    };
+
+    try {
+      await this.sendgridService.send(mail);
+    } catch (error) {
+      throw new InternalServerErrorException("Mailing service not working")
+    }
+    return "email sent";
+  }
+
   emailPreview(emailTag: string) {
     const contexts = {
       forgotten_password: { name: 'Tristan', password: 'Xv47A3k9Gaa1' },
       credentials: { name: 'Tristan', email: 'tristan.bourgeois@epitech.eu', password: 'Xv47A3k9Gaa1' },
       payment_link: { name: 'Tristan', payment_link: 'https://stripe.com' },
       newsletter_subscription: { name: 'Marie', email: 'marieclaire@gmail.com', object: 'Je veux m’informer des informations sur votre applications.' },
-      newsletter: {text: 'Voila un text personalisé'}
+      newsletter: {text: 'Voila un text personalisé'},
+      forgotten_password_link: { name: 'Tristan', link: 'https://innuendo-app.herokuapp.com/' }
     }
     return this.compileHandlebar(emailTag, contexts[emailTag]);
   }

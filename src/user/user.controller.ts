@@ -6,9 +6,8 @@ import { JwtGuard } from '../auth/guard';
 import { UserService } from './user.service';
 import { UseInterceptors } from '@nestjs/common';
 import { SentryInterceptor } from 'src/sentry.interceptor';
-import { UpdateUserDto } from './dto';
+import { ResetPasswordDto, UpdateUserDto } from './dto';
 @UseInterceptors(SentryInterceptor)
-@UseGuards(JwtGuard)
 @Controller('user')
 export class UserController {
     constructor(private userService: UserService) {}
@@ -17,11 +16,13 @@ export class UserController {
     @ApiUnauthorizedResponse({description: 'Access token unauthorized'})
     @ApiCreatedResponse({description: 'User obtained successfully'})
 
+    @UseGuards(JwtGuard)
     @Get('me')
     getMe(@GetUser() user: User) {
         return user;
     }
 
+    @UseGuards(JwtGuard)
     @Put('me')
     changeMyInformation(@GetUser() user: User, @Body() dto: UpdateUserDto) {
         return this.userService.updateUser(user, dto);
@@ -31,10 +32,23 @@ export class UserController {
     @ApiInternalServerErrorResponse({description: 'Internal server error occured'})
     @ApiCreatedResponse({description: 'User deleted successfully'})
 
+    @UseGuards(JwtGuard)
     @Post('delete')
     deleteMe(@GetUser() user: User, @Body('desactivate') desactivate: Boolean) {
         return this.userService.deleteById(user, desactivate);
     }
+
+    @Post('password/forgot')
+    startResetPassword(@Body('email') email: string) {
+        return this.userService.sendResetPasswordLink(email)
+    }
+
+    @Post('password/reset')
+    resetPassword(@Body() dto: ResetPasswordDto) {
+        return this.userService.resetPassword(dto)
+    }
+
+    @UseGuards(JwtGuard)
     @Post("device_id")
     linkDeviceId(@GetUser() user: User, @Body("device_id") deviceId: string) {
         return this.userService.linkDeviceId(user, deviceId);
