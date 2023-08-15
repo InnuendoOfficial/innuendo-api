@@ -1,5 +1,5 @@
 import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
-import { Pro } from '@prisma/client';
+import { Pro, User } from '@prisma/client';
 import { readFileSync } from 'fs';
 import Handlebars from 'handlebars';
 import { join } from 'path';
@@ -165,5 +165,34 @@ export class MailService {
       throw new InternalServerErrorException("Mailing service not working")
     }
     return "email sents";
+  }
+
+  async sendEmailToTeamInnuendo(pro: Pro, text: string, type: string) {
+    const teamEmailsTypes = [
+      "contact",
+      "subscription"
+    ]
+    if (!teamEmailsTypes.find(e => e == type)) {
+      throw new NotFoundException('Type should be one of the following: ' + teamEmailsTypes);
+    }
+    const title = type == 'contact' ? 'Nouveau retour utilisateur' : "Demande d'abonnement de " + pro.first_name;
+    try {
+        const mail = {
+          to: "innuendo.contact@gmail.com",
+          subject: title,
+          from: 'noreply@em3594.innuendo.ovh',
+          html: this.compileHandlebar(
+            'email_to_team',
+            {
+              title,
+              text
+            }
+          ),
+        };
+        await this.sendgridService.send(mail);
+    } catch (error) {
+      throw new InternalServerErrorException("Mailing service not working")
+    }
+    return "email sent";
   }
 }

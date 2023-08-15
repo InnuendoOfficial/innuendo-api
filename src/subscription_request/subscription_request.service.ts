@@ -22,6 +22,7 @@ export class SubscriptionRequestService {
           ...dto
         }
       });
+      // TODO: send email to inuendo team
       return subscriptionRequest;
     } catch (error) {
       throw error;
