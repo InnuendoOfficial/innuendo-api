@@ -13,10 +13,9 @@ export class MailController {
     return this.mailService.emailPreview(emailTag);
   }
 
-  @UseGuards(JwtGuard)
   @Post('/send/team')
-  sendEmailToTeam(@GetUser() user: Pro, @Body('text') text: string, @Body('type') type: string) {
-    return this.mailService.sendEmailToTeamInnuendo(user, text, type);
+  sendEmailToTeam(@Body('text') text: string, @Body('type') type: string) {
+    return this.mailService.sendEmailToTeamInnuendo(text, type);
   }
 
   @Post('/send')

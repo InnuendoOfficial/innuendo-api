@@ -167,7 +167,7 @@ export class MailService {
     return "email sents";
   }
 
-  async sendEmailToTeamInnuendo(pro: Pro, text: string, type: string) {
+  async sendEmailToTeamInnuendo(text: string, type: string) {
     const teamEmailsTypes = [
       "contact",
       "subscription"
@@ -175,7 +175,7 @@ export class MailService {
     if (!teamEmailsTypes.find(e => e == type)) {
       throw new NotFoundException('Type should be one of the following: ' + teamEmailsTypes);
     }
-    const title = type == 'contact' ? 'Nouveau retour utilisateur' : "Demande d'abonnement de " + pro.first_name;
+    const title = type == 'contact' ? 'Nouveau retour utilisateur' : "Nouvelle demande d'abonnement";
     try {
         const mail = {
           to: "innuendo.contact@gmail.com",
