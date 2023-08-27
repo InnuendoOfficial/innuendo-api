@@ -1,5 +1,5 @@
 import { ConsoleLogger, Controller, Get, Res, UseGuards, UseInterceptors } from '@nestjs/common';
-import { Headers, Post, Req } from '@nestjs/common/decorators';
+import { Delete, Headers, Post, Query, Req } from '@nestjs/common/decorators';
 import { ApiTags } from '@nestjs/swagger';
 import { Pro } from '@prisma/client';
 import { GetUser } from 'src/auth/decorator';
@@ -16,8 +16,14 @@ export class StripeController {
 
   @UseGuards(JwtGuard)
   @Get('subscription')
-  async subscribe(@GetUser() user: Pro) {
-    return this.stripeService.getSubscriptionRedirection(user);
+  async subscribe(@GetUser() user: Pro, @Query('reccurence') reccurence: string) {
+    return this.stripeService.getSubscriptionRedirection(user, reccurence);
+  }
+
+  @UseGuards(JwtGuard)
+  @Delete('subscription')
+  async cancelSubscription(@GetUser() user: Pro) {
+    return this.stripeService.cancelSubscription(user);
   }
 
   @Post('webhook')

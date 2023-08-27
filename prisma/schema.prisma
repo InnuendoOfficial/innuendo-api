@@ -43,6 +43,8 @@ model Pro {
   subscription_type String
   hash String
 
+  last_payment_date String?
+  next_payment_date String?
   stripe_customer StripeCustomer?
   is_subscription_valid Boolean @default(false)
 }

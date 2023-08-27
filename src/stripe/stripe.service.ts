@@ -15,18 +15,27 @@ export class StripeService {
     apiVersion: '2022-11-15'
   })
 
-  async getSubscriptionRedirection(pro: Pro) {
+  async getSubscriptionRedirection(pro: Pro, reccurence: string = 'monthly') {
+    if (pro.is_subscription_valid)
+      throw new BadRequestException('User already subscribed.');
+    if (reccurence != 'monthly' && reccurence != 'yearly')
+      throw new BadRequestException('reccurence should be monthly or yearly.')
+    const products = {
+      monthly: {
+        price: 'price_1MjEshKRZVlrydWnXqHWrFxj',
+        quantity: 1,
+      },
+      yearly: {
+        price: 'price_1NjkERKRZVlrydWnCPc2UMnm',
+        quantity: 1,
+      },
+    }
     const customer = await this.stripe.customers.create({
       email: pro.email
     })
     const session = await this.stripe.checkout.sessions.create({
       mode: 'subscription',
-      line_items: [
-        {
-          price: 'price_1MjEshKRZVlrydWnXqHWrFxj',
-          quantity: 1,
-        },
-      ],
+      line_items: [ products[reccurence] ],
       success_url: 'https://innuendo-app.herokuapp.com/paiementsucceed?session_id={CHECKOUT_SESSION_ID}',
       cancel_url: 'https://innuendo-app.herokuapp.com/paiementfailed',
       customer: customer.id
@@ -38,11 +47,30 @@ export class StripeService {
           pro_id: pro.id
         }
       })
+      await this.prisma.pro.update({
+        where: { id: pro.id },
+        data: { subscription_type: reccurence }
+      })
     } catch (error) {
       throw error;
     }
     await this.mailService.sendPaymentLink(pro, session.url)
     return session.url;
+  }
+
+  async cancelSubscription(user: Pro) {
+    try {
+      const stripeId = await this.prisma.stripeCustomer.findFirst({
+        where: { pro_id: user.id }
+      });
+      const customer = await this.stripe.customers.retrieve(stripeId.customer_id, {
+        expand: ['subscriptions']
+      })
+      await this.stripe.subscriptions.del(customer['subscriptions'].data[0].id);
+      return 'subscription canceled.'
+    } catch (error) {
+      throw error;
+    }
   }
 
   async manageWebhook(body, headers) {
@@ -53,14 +81,20 @@ export class StripeService {
           const stripeCustomer = await this.prisma.stripeCustomer.findUnique({
             where: { customer_id: body.data.object.customer }
           })
-          const user = await this.prisma.pro.update({
+          const user = await this.prisma.pro.findUnique({ where: { id: stripeCustomer.pro_id } })
+          const now = new Date()
+          const nextPaymentDate = user.subscription_type == 'monthly' ? new Date(now.setMonth(now.getMonth() + 1)) :
+                                                                        new Date(now.setFullYear(now.getFullYear() + 1))
+          const userUpdated = await this.prisma.pro.update({
             where: { id: stripeCustomer.pro_id },
             data: {
               is_subscription_valid: true,
-              hash: await argon.hash(password)
+              hash: await argon.hash(password),
+              last_payment_date: new Date().toString(),
+              next_payment_date: nextPaymentDate.toString()
             }
           })
-          await this.mailService.sendCredentialsEmail(user, password);
+          await this.mailService.sendCredentialsEmail(userUpdated, password);
         } catch (error) {
           throw error;
         }
