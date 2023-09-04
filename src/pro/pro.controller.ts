@@ -40,7 +40,7 @@ export class ProController {
     return this.proService.findProById(user.id)
   }
 
-  @Get()
+  @Get('all')
   getAll() {
     return this.proService.getAll()
   }
