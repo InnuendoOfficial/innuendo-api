@@ -174,7 +174,10 @@ export class ProService {
   async getAll() {
     try {
       const users = await this.prisma.pro.findMany();
-      return users.forEach(e =>  delete e.hash);
+      return users.map(e => {
+        delete e.hash;
+        return e;
+      });
     } catch (error) {
       throw error;
     }
