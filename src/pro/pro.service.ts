@@ -171,6 +171,14 @@ export class ProService {
     }
   }
 
+  async getAll() {
+    try {
+      return await this.prisma.pro.findMany();
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async findProById(id: number) {
     try {
       const pro = await this.prisma.pro.findUnique({
@@ -251,5 +259,20 @@ export class ProService {
       return 'password changed.';
     }
     throw new NotFoundException('No user is linked to this email.');
+  }
+
+  async deletePro(userId: number) {
+    try {
+      await this.prisma.pro.delete({ where: { id: userId } })
+      return 'record deleted';
+    } catch (error) {
+      if (
+        error instanceof PrismaClientKnownRequestError &&
+        error.code === 'P2025'
+      ) {
+        throw new NotFoundException('Record to delete does not exist.');
+      }
+      throw error;
+    }
   }
 }

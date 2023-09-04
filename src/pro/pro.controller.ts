@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, UseGuards,Query, Put } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards,Query, Put, Delete } from '@nestjs/common';
 import { ApiCreatedResponse, ApiForbiddenResponse, ApiTags } from '@nestjs/swagger';
 import { JwtGuard } from 'src/auth/guard';
 import { CreateProDto, ProDto } from './dto';
@@ -40,6 +40,11 @@ export class ProController {
     return this.proService.findProById(user.id)
   }
 
+  @Get()
+  getAll() {
+    return this.proService.getAll()
+  }
+
   // POST
   @ApiCreatedResponse({description: 'The ressource has been created'})
   @ApiForbiddenResponse({ description: 'Unauthorized Request' })
@@ -69,5 +74,11 @@ export class ProController {
   @Post('/forgotten_password')
   forgottenPassword(@Body('email') email: string) {
     return this.proService.changePassword(email);
+  }
+
+  @UseGuards(JwtGuard)
+  @Delete()
+  deleteUser(@GetUser() user: User) {
+    return this.proService.deletePro(user.id);
   }
 }
