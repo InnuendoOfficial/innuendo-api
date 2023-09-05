@@ -10,6 +10,10 @@ export class UpdateUserDto {
     @IsOptional()
     lastname: string
 
+    @IsString()
+    @IsOptional()
+    email: string
+
     @IsOptional()
     has_endometriosis: EndoStatus
 }
