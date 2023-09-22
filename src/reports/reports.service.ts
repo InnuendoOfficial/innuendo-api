@@ -54,7 +54,7 @@ export class ReportsService {
       const dateQuery = {
         AND: [
           {
-            date: { lte: end ? new Date(end) : new Date(Date.now()) }
+            date: { lte: end ? new Date(end) : new Date(new Date().getTime() + 24 * 60 * 60 * 1000) }
           },
           {
             date: { gte: start ? new Date(start) : new Date(null) }
