@@ -2,10 +2,11 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { PrismaClientKnownRequestError, PrismaClientValidationError } from '@prisma/client/runtime';
 import { PrismaService } from '../prisma/prisma.service';
 import { symptomTypeDto } from './dto';
+import { AwsService } from 'src/aws/aws.service';
 
 @Injectable()
 export class IndicatorTypesService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService, private awsService: AwsService) {}
 
   async findAllIndicatorTypes() {
     try {
@@ -30,13 +31,16 @@ export class IndicatorTypesService {
     }
   }
 
-  async createIndicatorType(dto: symptomTypeDto) {
+  async createIndicatorType(dto: symptomTypeDto, icon) {
     try {
       const symptomType = await this.prisma.symptomType.create({
         data: {
           ...dto,
         },
       });
+      if (icon) {
+        return await this.updateIndicatorType(symptomType.id, dto, icon);
+      }
       return symptomType;
     } catch (error) {
       if (error instanceof PrismaClientValidationError) {
@@ -63,11 +67,19 @@ export class IndicatorTypesService {
     }
   }
 
-  async updateIndicatorType(id: string, dto: symptomTypeDto) {
+  async updateIndicatorType(id: number, dto: symptomTypeDto, icon) {
     try {
+      let file = undefined;
+
+      if (icon) {
+        file = await this.awsService.uploadFile(icon);
+      }
       const symptomType = await this.prisma.symptomType.update({
         where: { id: +id },
-        data: { ...dto },
+        data: {
+          ...dto,
+          icon_url: file ? file.Location : null
+        },
       });
       return symptomType;
     } catch (error) {

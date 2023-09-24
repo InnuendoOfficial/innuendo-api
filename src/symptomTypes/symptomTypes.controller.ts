@@ -6,10 +6,13 @@ import {
   Param,
   Post,
   Put,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ApiOkResponse, ApiForbiddenResponse, ApiNotFoundResponse, ApiParam, ApiTags, ApiCreatedResponse, ApiUnprocessableEntityResponse, ApiAcceptedResponse, ApiNoContentResponse } from '@nestjs/swagger';
 import { symptomTypeDto } from './dto';
 import { IndicatorTypesService } from './symptomTypes.service';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('Symptoms Types')
 @Controller('symptom_types')
@@ -43,8 +46,9 @@ export class IndicatorTypesController {
   @ApiUnprocessableEntityResponse({description: 'The body contains not wanted content'})
 
   @Post()
-  createIndicatorType(@Body() dto: symptomTypeDto) {
-    return this.symptomTypesService.createIndicatorType(dto);
+  @UseInterceptors(FileInterceptor('icon'))
+  createIndicatorType(@Body() dto: symptomTypeDto,  @UploadedFile() icon) {
+    return this.symptomTypesService.createIndicatorType(dto, icon);
   }
 
 
@@ -55,8 +59,9 @@ export class IndicatorTypesController {
   @ApiNotFoundResponse({description: 'The ressource does not exist'})
 
   @Put(':id')
-  updateIndicatorType(@Param('id') id: string, @Body() dto: symptomTypeDto) {
-    return this.symptomTypesService.updateIndicatorType(id, dto);
+  @UseInterceptors(FileInterceptor('icon'))
+  updateIndicatorType(@Param('id') id: string, @Body() dto: symptomTypeDto, @UploadedFile() icon) {
+    return this.symptomTypesService.updateIndicatorType(+id, dto, icon);
   }
 
 

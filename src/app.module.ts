@@ -18,6 +18,7 @@ import { SendgridService } from './sendgrid/sendgrid.service';
 import { SendgridModule } from './sendgrid/sendgrid.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { NotificationsService } from './notifications/notifications.service';
+import { AwsModule } from './aws/aws.module';
 
 
 @Module({
@@ -38,6 +39,7 @@ import { NotificationsService } from './notifications/notifications.service';
     MailModule,
     StripeModule,
     SendgridModule,
+    AwsModule,
   ],
   providers: [SymptomsService, SendgridService, NotificationsService],
 })
