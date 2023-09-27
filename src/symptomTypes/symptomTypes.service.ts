@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaClientKnownRequestError, PrismaClientValidationError } from '@prisma/client/runtime';
 import { PrismaService } from '../prisma/prisma.service';
-import { symptomTypeDto } from './dto';
+import { UpdateSymptomTypeDto, symptomTypeDto } from './dto';
 import { AwsService } from 'src/aws/aws.service';
 
 @Injectable()
@@ -67,7 +67,7 @@ export class IndicatorTypesService {
     }
   }
 
-  async updateIndicatorType(id: number, dto: symptomTypeDto, icon) {
+  async updateIndicatorType(id: number, dto: UpdateSymptomTypeDto, icon) {
     try {
       let file = undefined;
 

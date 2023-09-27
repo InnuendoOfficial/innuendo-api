@@ -10,7 +10,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiOkResponse, ApiForbiddenResponse, ApiNotFoundResponse, ApiParam, ApiTags, ApiCreatedResponse, ApiUnprocessableEntityResponse, ApiAcceptedResponse, ApiNoContentResponse } from '@nestjs/swagger';
-import { symptomTypeDto } from './dto';
+import { UpdateSymptomTypeDto, symptomTypeDto } from './dto';
 import { IndicatorTypesService } from './symptomTypes.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 
@@ -60,7 +60,7 @@ export class IndicatorTypesController {
 
   @Put(':id')
   @UseInterceptors(FileInterceptor('icon'))
-  updateIndicatorType(@Param('id') id: string, @Body() dto: symptomTypeDto, @UploadedFile() icon) {
+  updateIndicatorType(@Param('id') id: string, @Body() dto: UpdateSymptomTypeDto, @UploadedFile() icon) {
     return this.symptomTypesService.updateIndicatorType(+id, dto, icon);
   }
 
