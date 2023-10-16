@@ -70,16 +70,17 @@ export class IndicatorTypesService {
   async updateIndicatorType(id: number, dto: UpdateSymptomTypeDto, icon) {
     try {
       let file = undefined;
+      const data = {
+        ...dto
+      }
 
       if (icon) {
         file = await this.awsService.uploadFile(icon);
+        data['icon_url'] = file.Location;
       }
       const symptomType = await this.prisma.symptomType.update({
         where: { id: +id },
-        data: {
-          ...dto,
-          icon_url: file ? file.Location : null
-        },
+        data,
       });
       return symptomType;
     } catch (error) {
