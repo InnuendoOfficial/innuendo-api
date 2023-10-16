@@ -99,6 +99,7 @@ model SymptomValue {
 
   int Int?
   string String?
+  bool Boolean?
 
   symptom Symptom @relation(fields: [symptom_id], references: [id], onDelete: Cascade)
 
@@ -167,6 +168,7 @@ model PasswordResetCode {
 enum UnitMeasure {
   int
   string
+  bool
 }
 
 enum EndoStatus {
