@@ -168,7 +168,7 @@ model PasswordResetCode {
 enum UnitMeasure {
   int
   string
-  bool
+  boolean
 }
 
 enum EndoStatus {
