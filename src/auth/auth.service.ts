@@ -5,6 +5,7 @@ import * as argon from 'argon2';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { User } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
@@ -47,6 +48,15 @@ export class AuthService {
     return this.getAccessToken(user.id);
   }
 
+  async refreshToken(user: User) {
+    return {
+      access_token: await this.jwt.signAsync({ id: user.id }, {
+        expiresIn: '60m',
+        secret: this.config.get('JWT_SECRET'),
+      }),
+    };
+  }
+
   async getAccessToken(id: number) {
     const payload = {
       id
@@ -55,11 +65,16 @@ export class AuthService {
 
     const token = await this.jwt.signAsync(payload, {
       expiresIn: '60m',
-      secret
+      secret,
+    });
+    const refreshToken = await this.jwt.signAsync(payload, {
+      expiresIn: '1Y',
+      secret,
     });
     return {
       expires_in: 3600,
-      access_token: token
+      access_token: token,
+      refresh_token: refreshToken,
     };
   }
 }

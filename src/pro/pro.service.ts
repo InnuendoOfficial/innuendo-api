@@ -9,6 +9,7 @@ import { ProAuthDto } from './dto/auth.dto';
 import { AuthService } from 'src/auth/auth.service';
 import { MailService } from 'src/mail/mail.service';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
+import { EndoscoresService } from 'src/endoscores/endoscores.service';
 
 @Injectable()
 export class ProService {
@@ -129,8 +130,17 @@ export class ProService {
         throw new NotFoundException('The code has expired or doesn\'t exist.');
       }
       const reports = await this.reportService.findAllUserReports(code.user_id);
+      const lastEndoscore = await this.prisma.endoscore.findFirst({
+        where: {
+          user_id: code.user_id,
+        },
+        orderBy: {
+          created_at: 'desc'
+        }
+      });
       return {
         code_expiracy: this.getDueDate(code.created_at),
+        last_endscore: lastEndoscore,
         data: await this.selectOnlyShowableSymptoms(reports, code.preferences)
       }
     } catch (error) {
@@ -163,7 +173,15 @@ export class ProService {
 
   async getPatients() {
     try {
-      let users = await this.prisma.user.findMany();
+      let users = await this.prisma.user.findMany({
+        include: {
+          endoscores: {
+            orderBy: {
+              created_at: 'desc',
+            }
+          }
+        }
+      });
 
       return this.prisma.listExclude(users, ['hash']);
     } catch (error) {
