@@ -130,7 +130,7 @@ export class ProService {
         throw new NotFoundException('The code has expired or doesn\'t exist.');
       }
       const reports = await this.reportService.findAllUserReports(code.user_id);
-      const lastEndoscore = await this.prisma.endoscore.findFirst({
+      const lastEndoscore = await this.prisma.endoscore.findMany({
         where: {
           user_id: code.user_id,
         },
