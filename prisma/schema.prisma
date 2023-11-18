@@ -75,6 +75,8 @@ model SymptomType {
   name String
   unit_measure UnitMeasure
   icon_url String?
+  illustration String?
+  description String?
 
   symptoms Symptom[]
 
@@ -87,7 +89,7 @@ model Symptom {
 
   value SymptomValue?
 
-  symptom_type SymptomType @relation(fields: [symptom_type_id], references: [id])
+  symptom_type SymptomType @relation(fields: [symptom_type_id], references: [id], onDelete: Cascade)
   report Report @relation(fields: [report_id], references: [id], onDelete: Cascade)
 
   symptom_type_id Int
