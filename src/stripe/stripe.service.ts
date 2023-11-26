@@ -3,17 +3,20 @@ import { ConfigService } from '@nestjs/config';
 import { Pro } from '@prisma/client';
 import { MailService } from 'src/mail/mail.service';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { ProService } from 'src/pro/pro.service';
 import Stripe from 'stripe';
 import * as argon from 'argon2';
 
 @Injectable()
 export class StripeService {
-  constructor(private prisma: PrismaService, private config: ConfigService, private mailService: MailService, private proService: ProService) {}
+  constructor(private prisma: PrismaService, private config: ConfigService, private mailService: MailService) {}
 
   private stripe = new Stripe(this.config.get('STRIPE_API_KEY'), {
     apiVersion: '2022-11-15'
   })
+
+  generatePassword() {
+    return Math.random().toString(36).slice(-8);
+  }
 
   async getSubscriptionRedirection(pro: Pro, reccurence: string = 'monthly') {
     if (pro.is_subscription_valid)
@@ -77,7 +80,7 @@ export class StripeService {
     switch (body.type) {
       case 'checkout.session.completed':
         try {
-          const password = this.proService.generatePassword();
+          const password = this.generatePassword();
           const stripeCustomer = await this.prisma.stripeCustomer.findUnique({
             where: { customer_id: body.data.object.customer }
           })

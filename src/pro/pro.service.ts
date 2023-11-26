@@ -9,7 +9,7 @@ import { ProAuthDto } from './dto/auth.dto';
 import { AuthService } from 'src/auth/auth.service';
 import { MailService } from 'src/mail/mail.service';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
-import { EndoscoresService } from 'src/endoscores/endoscores.service';
+import { StripeService } from 'src/stripe/stripe.service';
 
 @Injectable()
 export class ProService {
@@ -18,6 +18,7 @@ export class ProService {
     private reportService: ReportsService,
     private authService: AuthService,
     private  mailService: MailService,
+    private stripeService: StripeService,
   ) {}
 
   generatePassword() {
@@ -106,6 +107,7 @@ export class ProService {
       });
       delete pro.hash;
       pro['password'] = password;
+      await this.stripeService.getSubscriptionRedirection(pro, dto.subscription_type);
       return pro;
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
