@@ -50,7 +50,7 @@ export class AuthService {
 
   async refreshToken(user: User, refresh_token: string) {
     return {
-      expirres_in: 3600,
+      expires_in: 3600,
       refresh_token,
       access_token: await this.jwt.signAsync({ id: user.id }, {
         expiresIn: '60m',
