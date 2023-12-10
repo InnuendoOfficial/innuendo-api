@@ -48,8 +48,10 @@ export class AuthService {
     return this.getAccessToken(user.id);
   }
 
-  async refreshToken(user: User) {
+  async refreshToken(user: User, refresh_token: string) {
     return {
+      expirres_in: 3600,
+      refresh_token,
       access_token: await this.jwt.signAsync({ id: user.id }, {
         expiresIn: '60m',
         secret: this.config.get('JWT_SECRET'),
