@@ -55,7 +55,8 @@ export class StripeService {
         data: { subscription_type: reccurence }
       })
     } catch (error) {
-      throw error;
+      console.log(error);
+      throw new BadRequestException('Link already sent.');
     }
     await this.mailService.sendPaymentLink(pro, session.url)
     return session.url;
@@ -69,6 +70,7 @@ export class StripeService {
       const customer = await this.stripe.customers.retrieve(stripeId.customer_id, {
         expand: ['subscriptions']
       })
+      console.log(customer);
       await this.stripe.subscriptions.del(customer['subscriptions'].data[0].id);
       return 'subscription canceled.'
     } catch (error) {
@@ -77,6 +79,7 @@ export class StripeService {
   }
 
   async manageWebhook(body, headers) {
+    console.log('webhook type', body.type);
     switch (body.type) {
       case 'checkout.session.completed':
         try {
@@ -98,6 +101,21 @@ export class StripeService {
             }
           })
           await this.mailService.sendCredentialsEmail(userUpdated, password);
+        } catch (error) {
+          throw error;
+        }
+        break;
+      case 'customer.subscription.deleted':
+        try {
+          const stripeCustomer = await this.prisma.stripeCustomer.findUnique({
+            where: { customer_id: body.data.object.customer }
+          })
+          await this.prisma.pro.update({
+            where: { id: stripeCustomer.pro_id },
+            data: {
+              is_subscription_valid: false,
+            }
+          })
         } catch (error) {
           throw error;
         }
