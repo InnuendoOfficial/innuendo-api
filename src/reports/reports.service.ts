@@ -3,6 +3,8 @@ import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import { SymptomsService } from 'src/symptoms/symptoms.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ReportDto, reportQueriesDto } from './dto';
+import { User } from '@prisma/client';
+import { DeleteReportsDto } from './dto/delete-reports.dto';
 
 @Injectable()
 export class ReportsService {
@@ -137,6 +139,21 @@ export class ReportsService {
       ) {
         throw new NotFoundException('Record to update does not exist.');
       }
+      throw error;
+    }
+  }
+
+  async deleteAllReports(user: User, dto: DeleteReportsDto) {
+    try {
+      const deleted = await this.prisma.report.deleteMany({
+        where: {
+          id: { in: dto.ids },
+          user_id: user.id
+        }
+      });
+      console.log(deleted);
+      return `Reports ${dto.ids} successfully deleted.`;
+    } catch (error) {
       throw error;
     }
   }

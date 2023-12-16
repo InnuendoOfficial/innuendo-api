@@ -7,6 +7,7 @@ import { ReportDto, reportQueriesDto } from './dto';
 import { ReportsService } from './reports.service';
 import { UseInterceptors } from '@nestjs/common';
 import { SentryInterceptor } from 'src/sentry.interceptor';
+import { DeleteReportsDto } from './dto/delete-reports.dto';
 @ApiTags('Reports')
 
 @UseInterceptors(SentryInterceptor)
@@ -62,6 +63,11 @@ export class ReportsController {
   @Put(':id')
   updateReport(@Param('id') id: string, @Body() dto: ReportDto) {
     return this.reportsService.updateReport(+id, dto);
+  }
+
+  @Delete()
+  deleteReports(@GetUser() user: User, @Body() dto: DeleteReportsDto){
+    return this.reportsService.deleteAllReports(user, dto);
   }
 
 
