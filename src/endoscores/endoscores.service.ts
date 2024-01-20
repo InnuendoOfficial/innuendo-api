@@ -1,7 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { User } from '@prisma/client';
 import axios from 'axios';
-import { end } from 'pactum/src/exports/reporter';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ReportsService } from 'src/reports/reports.service';
 
@@ -39,7 +38,7 @@ export class EndoscoresService {
       }
       return endoscore;
     } catch (error) {
-      
+      throw error;
     }
   }
 
@@ -50,13 +49,13 @@ export class EndoscoresService {
       const res = await axios.post("http://20.234.134.41:8081/endoScore", {
         code_expiracy: null,
         has_endometriosis: user.has_endometriosis,
-        data: reports
-      });      
+        data: reports,
+      });
       return await this.prismaService.endoscore.create({
         data: {
           score: res.data.endoScore,
           user_id: user.id,
-        }
+        },
       });
     } catch (error) {
       throw error;

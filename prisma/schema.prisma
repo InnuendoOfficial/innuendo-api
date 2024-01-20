@@ -53,7 +53,7 @@ model StripeCustomer {
   id Int @id @default(autoincrement())
 
   customer_id String @unique
-  pro Pro @relation(fields: [pro_id], references: [id])
+  pro Pro @relation(fields: [pro_id], references: [id], onDelete: Cascade)
 
   pro_id Int @unique
 }
